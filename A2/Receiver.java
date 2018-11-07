@@ -128,7 +128,7 @@ public class Receiver {
 						DatagramPacket send_packet = new DatagramPacket(arr, arr.length, emulator_addr, emulator_port);
 
 						//UDP formatted datagram sent through receiver socket to emulator
-						System.out.println("Sending ack with seqence: " + ack_packet.getSeqNum());
+						System.out.println("Sending EOT with seqence: " + ack_packet.getSeqNum());
 						server_socket.send(send_packet);
 					} catch (Exception e) {
 						System.out.println("Error: Cannot create EOT packet.");
@@ -145,10 +145,10 @@ public class Receiver {
 						DatagramPacket send_packet = new DatagramPacket(arr, arr.length, emulator_addr, emulator_port);
 
 						//UDP formatted datagram sent through receiver socket to emulator
-						System.out.println("Sending EOT with seqence: " + ack_packet.getSeqNum());
+						System.out.println("Sending ack with seqence: " + ack_packet.getSeqNum());
 						server_socket.send(send_packet);
 					} catch (Exception e) {
-						System.out.println("Error: Cannot create EOT packet.");
+						System.out.println("Error: Cannot create ACK packet.");
 					}
 
 				}
@@ -156,6 +156,7 @@ public class Receiver {
 				
 				if(isEOT)
 				{
+					System.out.println("Receiver breaking from listen"); 
 					break;
 				}
 
