@@ -67,7 +67,7 @@ public class Sender {
     emulator_addr = InetAddress.getByName(args[0]); 
     emulator_port= Integer.parseInt(args[1]); 
     sender_port = Integer.parseInt(args[2]);
-    file_name = args[4]; 
+    file_name = args[3]; 
 
     //linked list buffer
     not_acked_packets = new LinkedList<packet>();
