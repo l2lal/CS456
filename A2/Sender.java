@@ -169,12 +169,14 @@ public class Sender {
 
     public void startTimerTask()
     {
+      System.out.println("Starting Timer...");
       waiter_task = new WaiterTask(); 
       timer.schedule(waiter_task, this.seconds*1000);
     }
 
     public void stopTimerTask()
     {
+      System.out.println("Stopping timer...");
       waiter_task.cancel(); 
     }
 
@@ -188,6 +190,7 @@ public class Sender {
   public static class Send_Thread implements Runnable {
 
     public void run(){
+      System.out.println("Sender thread kickoff");
 
       //get file data!! 
        rdtSend(); 
@@ -197,7 +200,9 @@ public class Sender {
   public static class Ack_Receive implements Runnable {
 
     public void run(){
-       rdtReceive();  
+      System.out.println("Ack Receive thread kickoff");
+
+      rdtReceive();  
     }
   }
 
@@ -229,6 +234,9 @@ public class Sender {
           byte[] arr = orig_packet.getUDPdata();
           //create UDP datagrapm from this
           DatagramPacket send_packet = new DatagramPacket(arr, arr.length, emulator_addr, emulator_port);
+
+          System.out.println("Sending data packet with sequence: " + orig_packet.getSeqNum()); 
+
           client_socket.send(send_packet);
           seq_log_handle.write(String.valueOf(orig_packet.getSeqNum()));
           seq_log_handle.newLine();
@@ -260,6 +268,8 @@ public class Sender {
       byte[] arr = eot_packet.getUDPdata();
       //create UDP datagrapm from this
       DatagramPacket send_packet = new DatagramPacket(arr, arr.length, emulator_addr, emulator_port);
+
+      System.out.println("Sending EOT packet with sequence: " + eot_packet.getSeqNum()); 
 
       //UDP formatted datagram sent through client socket to emulator
       client_socket.send(send_packet);
@@ -308,7 +318,7 @@ public class Sender {
               }  
             }
           } catch (Exception e) {
-            System.out.println("Error: Cannot send EOT Packet"); 
+            System.out.println("Error: Receiver thread failure"); 
           }
           
 
@@ -319,8 +329,10 @@ public class Sender {
       }
     // should close serverSocket in finally block
     //close socket HERE
+    System.out.println("EOT Received. Closing client socket"); 
+
     client_socket.close();
-    try { ack_log_handle.close(); } catch (IOException e) {System.out.println("Error: Cannot close file"); } 
+    try { ack_log_handle.close(); } catch (IOException e) {System.out.println("Error: Cannot close ack log file"); } 
       
   } 
   
@@ -354,9 +366,10 @@ public class Sender {
 
   }
 
-  public static synchronized boolean eotParsed(packet ack_packet) {
+  public static synchronized boolean eotParsed(packet ack_packet) { 
 
     if(ack_packet.getType() == 2 && not_acked_packets.size() == 1) {
+      System.out.println("Got EOT of sequence: " + ack_packet.getSeqNum()); 
       not_acked_packets.removeFirst();
       return true; 
     }
@@ -368,6 +381,7 @@ public class Sender {
     int index = 0; 
 
     if(ack_packet.getType() == 0) { //type is an ACK, as we expected
+      System.out.println("Got ack with sequence: " + ack_packet.getSeqNum()); 
 
       for(int i = 0; i < not_acked_packets.size(); i++)
       {

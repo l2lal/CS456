@@ -102,6 +102,9 @@ public class Receiver {
 				try {
 					packet data_packet = packet.parseUDPdata(receive_packet.getData());
 					//write incoming packet to log file
+					System.out.println("Got a packet with sequence" + data_packet.getSeqNum());
+					System.out.println("Expecting a sequence of: " + updated_seq_num);
+
 					ack_log_handle.write(String.valueOf(data_packet.getSeqNum()));
 					ack_log_handle.newLine();
 
@@ -125,6 +128,7 @@ public class Receiver {
 						DatagramPacket send_packet = new DatagramPacket(arr, arr.length, emulator_addr, emulator_port);
 
 						//UDP formatted datagram sent through receiver socket to emulator
+						System.out.println("Sending ack with seqence: " + ack_packet.getSeqNum());
 						server_socket.send(send_packet);
 					} catch (Exception e) {
 						System.out.println("Error: Cannot create EOT packet.");
@@ -141,6 +145,7 @@ public class Receiver {
 						DatagramPacket send_packet = new DatagramPacket(arr, arr.length, emulator_addr, emulator_port);
 
 						//UDP formatted datagram sent through receiver socket to emulator
+						System.out.println("Sending EOT with seqence: " + ack_packet.getSeqNum());
 						server_socket.send(send_packet);
 					} catch (Exception e) {
 						System.out.println("Error: Cannot create EOT packet.");
@@ -157,7 +162,8 @@ public class Receiver {
       			try { Thread.sleep(1*1000); } catch (Exception e) { } 
 	    	}
 
-	    //close socket, sending only EOT once, assuming it doesn't get messed up along the way. 
+	    //close socket, sending only EOT once, assuming it doesn't get messed up along the way.
+	    System.out.println("EOT sent, closing connection"); 
 	    server_socket.close();
 	    ack_log_handle.close(); 
 
