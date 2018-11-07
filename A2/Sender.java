@@ -212,6 +212,7 @@ public class Sender {
     
     while(file_length - off > 0)
     {
+      System.out.println("Still have stuff to send");
 
       if(windowNotFull())
       {
@@ -242,6 +243,7 @@ public class Sender {
           seq_log_handle.newLine();
           if(timerNeeded())
           {
+            System.out.println("starting timer!"); 
             waiter.stopTimerTask();
             waiter.startTimerTask(); 
           }
