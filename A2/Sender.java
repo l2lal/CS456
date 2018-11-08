@@ -221,10 +221,11 @@ public class Sender {
       if(windowNotFull())
       {
         //determine length of file left to send
-        long len = (file_length - off) > MaxDataLength ? MaxDataLength : (file_length - off);
+        long len = (file_length - (off) > MaxDataLength ? MaxDataLength : (file_length - off);
 
         //read file using file handle and place into string
         try {
+          System.out.println("File size is: " + file_length); 
           System.out.println("Amount to read is: " + len); 
           System.out.println("Offset it " + off);
           System.out.println("Index is " + off+(int)len); 
