@@ -279,7 +279,7 @@ public class Sender {
       seq_log_handle.write(String.valueOf(eot_packet.getSeqNum()));
       seq_log_handle.newLine(); 
       next_seq_num = (next_seq_num + 1) % SeqNumModulo;
-      addToList(orig_packet);
+      addToList(eot_packet);
     } catch (Exception e) { }
 
     setEotExpected(); 
