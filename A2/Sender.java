@@ -313,6 +313,7 @@ public class Sender {
     while(!eot_received) 
     {
       System.out.println("Waiting for buffer to empty");
+      try { Thread.sleep(1*1000); } catch (Exception e) { }
       //System.out.println("size of linked list is " + not_acked_packets.size());
     }
     try { 

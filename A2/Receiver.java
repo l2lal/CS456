@@ -103,8 +103,7 @@ public class Receiver {
 				try {
 					packet data_packet = packet.parseUDPdata(receive_packet.getData());
 					//write incoming packet to log file
-					System.out.println("Got a packet with sequence" + data_packet.getSeqNum());
-					System.out.println("Expecting a sequence of: " + updated_seq_num);
+					System.out.println("Rcv Seq: " + data_packet.getSeqNum() + " Exp Seq: " + updated_seq_num); 
 
 					ack_log_handle.write(String.valueOf(data_packet.getSeqNum()));
 					ack_log_handle.newLine();
@@ -187,7 +186,7 @@ public class Receiver {
 			//check to see we're getting the right ack
 			if(data_packet.getSeqNum() == (updated_seq_num+1) % SeqNumModulo)
 			{
-				updated_seq_num = data_packet.getSeqNum(); 
+				updated_seq_num = (updated_seq_num+1) % SeqNumModulo; 
 
 				if(data_packet.getType() == 2)
 				{
