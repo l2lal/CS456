@@ -225,6 +225,9 @@ public class Sender {
 
         //read file using file handle and place into string
         try {
+          System.out.println("Amount to read is: " + len); 
+          System.out.println("Offset it " + off);
+          System.out.println("Index is " + off+(int)len); 
           int read_len = file_handle.read(cbuf, off, (int)len);
         } catch (IOException e) {
           System.out.println("Error: Failed read of file");
@@ -248,6 +251,7 @@ public class Sender {
           seq_log_handle.newLine();
           next_seq_num = (next_seq_num + 1) % SeqNumModulo;
           addToList(orig_packet);
+          System.out.println("Size of list is now: " + not_acked_packets.size()); 
           
           if(timerNeeded())
           {
