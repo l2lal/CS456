@@ -166,7 +166,7 @@ public class Receiver {
 					break;
 				}
 
-      			try { Thread.sleep(1*1000); } catch (Exception e) { } 
+      			//try { Thread.sleep(1*1000); } catch (Exception e) { } 
 	    	}
 
 	    //close socket, sending only EOT once, assuming it doesn't get messed up along the way.

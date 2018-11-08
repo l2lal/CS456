@@ -365,6 +365,11 @@ public class Sender {
             break;
           } 
         }
+
+        client_socket.close();
+        ack_log_handle.close();
+        waiter.timer.cancel(); 
+        file_handle.close(); 
       } catch (IOException e) {
           e.printStackTrace();
       }
@@ -372,9 +377,10 @@ public class Sender {
     //close socket HERE
     System.out.println("EOT Received. Closing client socket"); 
 
-    client_socket.close();
-    try { ack_log_handle.close(); } catch (IOException e) {System.out.println("Error: Cannot close ack log file"); }
-    waiter.timer.cancel(); 
+    //client_socket.close();
+    //try { ack_log_handle.close(); } catch (IOException e) {System.out.println("Error: Cannot close ack log file"); }
+    //waiter.timer.cancel(); 
+    //file_handle.close();
     return;  
       
   } 
