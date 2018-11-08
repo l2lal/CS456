@@ -132,6 +132,7 @@ public class Receiver {
 						//UDP formatted datagram sent through receiver socket to emulator
 						System.out.println("Sending EOT with seqence: " + ack_packet.getSeqNum());
 						server_socket.send(send_packet);
+						updated_seq_num = (updated_seq_num + 1) % SeqNumModulo;
 					} catch (Exception e) {
 						System.out.println("Error: Cannot create EOT packet.");
 					}
@@ -149,6 +150,7 @@ public class Receiver {
 						//UDP formatted datagram sent through receiver socket to emulator
 						System.out.println("Sending ack with seqence: " + ack_packet.getSeqNum());
 						server_socket.send(send_packet);
+						updated_seq_num = (updated_seq_num + 1) % SeqNumModulo;
 					} catch (Exception e) {
 						System.out.println("Error: Cannot create ACK packet.");
 					}
@@ -185,8 +187,6 @@ public class Receiver {
 			//check to see we're getting the right ack
 			if(data_packet.getSeqNum() == updated_seq_num)
 			{
-				//update latest received ack and write data to input file
-				updated_seq_num = (updated_seq_num + 1) % SeqNumModulo;
 
 				if(data_packet.getType() == 2)
 				{
