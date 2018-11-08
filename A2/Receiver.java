@@ -103,7 +103,7 @@ public class Receiver {
 				try {
 					packet data_packet = packet.parseUDPdata(receive_packet.getData());
 					//write incoming packet to log file
-					System.out.println("Rcv Seq: " + data_packet.getSeqNum() + " Exp Seq: " + updated_seq_num); 
+					System.out.println("Rcv Seq: " + data_packet.getSeqNum() + " Exp Seq: " + ((updated_seq_num+1)%SeqNumModulo)); 
 
 					ack_log_handle.write(String.valueOf(data_packet.getSeqNum()));
 					ack_log_handle.newLine();
