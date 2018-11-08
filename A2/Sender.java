@@ -265,7 +265,7 @@ public class Sender {
 
       try { Thread.sleep(1*1000); } catch (Exception e) { } 
 
-    }
+    }//while
 
     //send EOT, let receiver deal with sending appropriate ACKs and its own EOT
     packet eot_packet; 
@@ -309,6 +309,7 @@ public class Sender {
         {
           System.out.println("Receiver still on...");
           client_socket.receive(receive_packet);
+          System.out.println("Receiver got something!");
           try {
             packet ack_packet = packet.parseUDPdata(receive_packet.getData());
 
