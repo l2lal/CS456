@@ -389,7 +389,8 @@ public class Sender {
 
   // synchronized methods, only one can happen at a time
   public static synchronized void parseAck(packet ack_packet) {
-    int index = 0; 
+    int index = 0;
+    System.out.println("type of packet is " + ack_packet.getType()); 
 
     if(ack_packet.getType() == 0) { //type is an ACK, as we expected
       System.out.println("Got ack with sequence: " + ack_packet.getSeqNum()); 
