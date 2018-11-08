@@ -289,7 +289,7 @@ public class Sender {
 
     setEotExpected(); 
 
-    while(not_acked_packets.size() != 0) {}
+    while(not_acked_packets.size() != 0) {System.out.println("Waiting for buffer to empty");}
     try { seq_log_handle.close(); } catch (IOException e) {System.out.println("Error: Cannot close file"); } 
 
   }
