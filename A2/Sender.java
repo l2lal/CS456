@@ -28,7 +28,7 @@ import java.io.BufferedWriter;
 public class Sender {
   //constants
   private final static int N = 10; //Window size
-  private final static  int Timeout_val = 10;
+  private final static  int Timeout_val = 300; //milliseconds
   private final static int MaxDataLength = 500; 
   private final static int SeqNumModulo = 32;
 
@@ -209,18 +209,18 @@ public class Sender {
   // Custom class that implements timer
   public static class Waiter {
     Timer timer;
-    int seconds;
+    int milliseconds;
     TimerTask waiter_task; 
 
     /*Function constructor
     Parameters: 1
-      $1: timeout in seconds
+      $1: timeout in milliseconds
 
     Return: waiter object
     */
-    public Waiter(int seconds) {
+    public Waiter(int milliseconds) {
         timer = new Timer();
-        this.seconds = seconds; 
+        this.milliseconds = milliseconds; 
     }
 
      /*Function startTimerTask - starts timer
@@ -232,7 +232,7 @@ public class Sender {
     {
       System.out.println("Starting Timer...");
       waiter_task = new WaiterTask(); 
-      timer.schedule(waiter_task, this.seconds*1000);
+      timer.schedule(waiter_task, this.milliseconds);
     }
 
     /*Function stopTimerTask - stops timer
@@ -290,7 +290,7 @@ public class Sender {
 
     //create file reading buffer
     char[] cbuf = new char[MaxDataLength];
-    //store result of each file read 
+    //store result of each file read; successful reads will contain length of bytes read, -1 otherwise.  
     int read_result = 0; 
     
     try {
@@ -316,6 +316,7 @@ public class Sender {
       {
         //place file read buffer into a string
         try {
+          //copy buffer  to string, only create string of length that was rad
           String strData = String.copyValueOf(cbuf, 0, read_result);
 
           //placeholder for sending packet
@@ -332,7 +333,7 @@ public class Sender {
           addToList(orig_packet);
           System.out.println("List size: " + not_acked_packets.size()); 
           
-          //check if sent item is first
+          //check if sent item is first unack'd in window, then we'll need to kick off the timer 
           if(timerNeeded())
           {
             waiter.stopTimerTask();
@@ -395,6 +396,7 @@ public class Sender {
     {
       try { Thread.sleep(1*1000); } catch (Exception e) { System.exit(-1); }
     }
+    //EOT was received, close handle of outbound sequence log
     try { 
       System.out.println("Closing sequence log handle");
       if(seq_log_handle != null) seq_log_handle.close(); 
@@ -406,6 +408,11 @@ public class Sender {
 
   } //rdtSend
 
+    /*Function rdtReceive - function executed by ack receiving thread; this sends input file data to emulator
+    Parameters: None
+
+    Return: None
+    */
   public static void rdtReceive() {
 
     try {
