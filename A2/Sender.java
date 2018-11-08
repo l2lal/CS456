@@ -78,7 +78,7 @@ public class Sender {
 
     //Filehandle
     target_file = new File(file_name); 
-    file_handle = new BufferedReader(new FileReader(file_name));
+    file_handle = new BufferedReader(new FileReader(file_name), MaxDataLength);
     file_length = target_file.length();
 
     // log file handles
@@ -211,35 +211,37 @@ public class Sender {
   }
 
   public static void rdtSend() {
-    int off = 0; 
     char[] cbuf = new char[MaxDataLength]; 
-    
-    while(file_length - off > 0)
+    int read_result = 0; 
+    try {
+      read_result = file_handle.read(cbuf);
+    } catch (IOException e) {
+      System.out.println("Cannot read file");
+      e.printStackTrace();
+      System.exit(-1); 
+    }
+
+    while(read_result != -1)
     {
       System.out.println("Still have stuff to send");
 
       if(windowNotFull())
       {
         //determine length of file left to send
-        long len = (file_length - off) > MaxDataLength ? MaxDataLength : (file_length - off);
+        //long len = (file_length - off) > MaxDataLength ? MaxDataLength : (file_length - off);
 
         //read file using file handle and place into string
         try {
-          System.out.println("File size is: " + file_length); 
-          System.out.println("Amount to read is: " + len); 
-          System.out.println("Offset it " + off);
-          System.out.println("Index is " + off+(int)len); 
-          int read_len = file_handle.read(cbuf, off, (int)len);
-        } catch (IOException e) {
-          System.out.println("Error: Failed read of file");
-          System.exit(-1); 
-        }
-        
-        String strData = String.copyValueOf(cbuf);
-        System.out.println("Data to send: " + strData);
-        packet orig_packet;  
+          //System.out.println("File size is: " + file_length); 
+          //System.out.println("Amount to read is: " + len); 
+          //System.out.println("Offset it " + off);
+          //System.out.println("Index is " + off+(int)len); 
+          //int read_res = file_handle.read(cbuf, 0, (int)len);
 
-        try {
+          String strData = String.copyValueOf(cbuf);
+          System.out.println("Data to send: " + strData);
+          packet orig_packet; 
+          
           orig_packet = packet.createPacket(next_seq_num, strData);
           byte[] arr = orig_packet.getUDPdata();
           //create UDP datagrapm from this
@@ -261,19 +263,35 @@ public class Sender {
             waiter.startTimerTask(); 
           }
   
-          off = off + (int)len; 
-        } catch (Exception e) {
-          System.out.println("Error: Failed to create and send packet HERE");
+        } catch (IOException e) {
+          System.out.println("Error: Failed read of file");
           e.printStackTrace(); 
           System.exit(-1); 
-        } 
+        } catch (Exception e) {
+          System.out.println("Error: Cannot create packet");
+          e.printStackTrace(); 
+        }
+        
       }
+
+      try {
+        read_result = file_handle.read(cbuf);
+      } catch (IOException e) {
+        System.out.println("Cannot read file");
+        e.printStackTrace();
+        System.exit(-1);  
+      } 
 
       try { Thread.sleep(1*1000); } catch (Exception e) { } 
 
     }//while
 
     //send EOT, let receiver deal with sending appropriate ACKs and its own EOT
+    while(!windowNotFull())
+    {
+      //wait until window opens to send eot packet
+      try { Thread.sleep(1*1000); } catch (Exception e) {e.printStackTrace(); }
+    }
     packet eot_packet; 
     try { 
       eot_packet = packet.createEOT(next_seq_num); 
@@ -302,7 +320,7 @@ public class Sender {
     }
     try { 
       System.out.println("Closing sequence log handle");
-      seq_log_handle.close(); 
+      if(seq_log_handle != null) seq_log_handle.close(); 
     } catch (IOException e) {
       System.out.println("Error: Cannot close file"); 
     }
@@ -362,6 +380,7 @@ public class Sender {
     //kick off another timer
     waiter.stopTimerTask(); 
     waiter.startTimerTask(); 
+    System.out.println("Retransmitting " + not_acked_packets.size() + " packets"); 
 
     for(int i = 0; i < not_acked_packets.size(); i++)
     {
