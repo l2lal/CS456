@@ -346,6 +346,7 @@ public class Sender {
 
     client_socket.close();
     try { ack_log_handle.close(); } catch (IOException e) {System.out.println("Error: Cannot close ack log file"); }
+    waiter.cancel(); 
     return;  
       
   } 
@@ -353,6 +354,7 @@ public class Sender {
   public static synchronized void reTransmit() {
 
     //kick off another timer
+    waiter.stopTimerTask(); 
     waiter.startTimerTask(); 
 
     for(int i = 0; i < not_acked_packets.size(); i++)
