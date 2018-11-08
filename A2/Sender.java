@@ -228,6 +228,7 @@ public class Sender {
         }
         
         String strData = String.copyValueOf(cbuf);
+        System.out.println("Data to send: " + strData);
         packet orig_packet;  
 
         try {
@@ -246,7 +247,7 @@ public class Sender {
           
           if(timerNeeded())
           {
-             
+            System.out.println("We are about to kickoff timer");
             waiter.stopTimerTask();
             waiter.startTimerTask(); 
           }
