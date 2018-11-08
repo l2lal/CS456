@@ -246,14 +246,14 @@ public class Sender {
           
           if(timerNeeded())
           {
-            System.out.println("starting timer!"); 
+             
             waiter.stopTimerTask();
             waiter.startTimerTask(); 
           }
   
           off = off + (int)len; 
         } catch (Exception e) {
-          System.out.println("Error: Failed to create and send packet");
+          System.out.println("Error: Failed to create and send packet HERE");
           System.exit(-1); 
         } 
       }
