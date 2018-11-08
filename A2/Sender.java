@@ -290,7 +290,10 @@ public class Sender {
 
     setEotExpected(); 
 
-    while(not_acked_packets.size() != 0) {System.out.println("Waiting for buffer to empty");}
+    while(!eot_received) {
+      System.out.println("Waiting for buffer to empty");
+      System.out.println("size of linked list is " + not_acked_packets.size());
+    }
     try { 
       System.out.println("Closing sequence log handle");
       seq_log_handle.close(); 
