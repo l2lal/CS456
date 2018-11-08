@@ -241,15 +241,16 @@ public class Sender {
           client_socket.send(send_packet);
           seq_log_handle.write(String.valueOf(orig_packet.getSeqNum()));
           seq_log_handle.newLine();
+          next_seq_num = (next_seq_num + 1) % SeqNumModulo;
+          addToList(orig_packet);
+          
           if(timerNeeded())
           {
             System.out.println("starting timer!"); 
             waiter.stopTimerTask();
             waiter.startTimerTask(); 
           }
-
-          next_seq_num = (next_seq_num + 1) & SeqNumModulo;
-          addToList(orig_packet);  
+  
           off = off + (int)len; 
         } catch (Exception e) {
           System.out.println("Error: Failed to create and send packet");
@@ -277,7 +278,8 @@ public class Sender {
       client_socket.send(send_packet);
       seq_log_handle.write(String.valueOf(eot_packet.getSeqNum()));
       seq_log_handle.newLine(); 
-      addToList(eot_packet);
+      next_seq_num = (next_seq_num + 1) % SeqNumModulo;
+      addToList(orig_packet);
     } catch (Exception e) { }
 
     setEotExpected(); 
