@@ -227,7 +227,8 @@ public class Sender {
       //System.out.println("Still have stuff to send");
       while(!windowNotFull())
       {
-        System.out.println("Waiting for window to open"); 
+        System.out.println("Waiting for window to open");
+        try { Thread.sleep(1*1000); } catch (Exception e) { }  
       }
       if(windowNotFull())
       {

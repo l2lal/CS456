@@ -17,7 +17,7 @@ public class Receiver {
 	static BufferedWriter ack_log_handle;
 
 	static boolean isEOT = false;
-	static int updated_seq_num = 0;
+	static int updated_seq_num = -1;
 	private final static int SeqNumModulo = 32;
 	
 	public static void main(String[] args) throws Exception {
