@@ -284,7 +284,7 @@ public class Sender {
     }//while
 
     //send EOT, let receiver deal with sending appropriate ACKs and its own EOT
-    while(!windowNotFull())
+    while(windowNotFull())
     {
       //wait until window opens to send eot packet
       //try { Thread.sleep(1*1000); } catch (Exception e) {e.printStackTrace(); }
@@ -355,6 +355,7 @@ public class Sender {
           //try { Thread.sleep(1*1000); } catch (Exception e) { }
           if(eot_received)
           {
+            System.out.println("EOT RECEIVED!"); 
             break;
           } 
         }
@@ -418,6 +419,7 @@ public class Sender {
   public static synchronized void parseAck(packet ack_packet) {
 
     try{
+      System.out.println("Writing to ack log");
       ack_log_handle.write(String.valueOf(ack_packet.getSeqNum()));
       ack_log_handle.newLine();
     } catch (IOException e) {
@@ -478,7 +480,7 @@ public class Sender {
 
   public static synchronized boolean timerNeeded() {
     
-    if(base != next_seq_num)
+    if(base == next_seq_num)
     {
       return true;
     }
