@@ -316,7 +316,7 @@ public class Sender {
         DatagramPacket receive_packet = new DatagramPacket(receive_data, receive_data.length);
 
         //always-on receiver thread for client
-        while(true && !eot_received)
+        while(true)
         {
           System.out.println("Receiver still on...");
           client_socket.receive(receive_packet);
@@ -332,7 +332,11 @@ public class Sender {
           }
           
 
-          try { Thread.sleep(1*1000); } catch (Exception e) { } 
+          try { Thread.sleep(1*1000); } catch (Exception e) { }
+          if(eot_received)
+          {
+            break;
+          } 
         }
       } catch (IOException e) {
           System.out.println(e);
