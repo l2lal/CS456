@@ -177,7 +177,7 @@ public class Sender {
     public void stopTimerTask()
     {
       System.out.println("Stopping timer...");
-      if(waiter_task != NULL) {
+      if(waiter_task != null) {
         System.out.println("Timer isn't null");
         waiter_task.cancel(); 
       }
