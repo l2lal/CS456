@@ -423,6 +423,7 @@ public class Sender {
 
   // synchronized methods, only one can happen at a time
   public static synchronized void parseAck(packet ack_packet) {
+    boolean found_in_list = false; 
 
     try{
       System.out.println("Writing to ack log");
@@ -443,12 +444,13 @@ public class Sender {
         if(not_acked_packets.get(i).getSeqNum() == ack_packet.getSeqNum())
         {
           System.out.println("found ack at index: " + i);
-          index = i; 
+          index = i;
+          found_in_list = true;  
           break;
         }
       }
 
-      if(index >= not_acked_packets.size())
+      if(!found_in_list)
       {
         System.out.println("ACK NOT IN WINDOW");
         return; //ignore duplicate or ack's that don't reflect our window packets

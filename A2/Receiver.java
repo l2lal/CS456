@@ -181,8 +181,6 @@ public class Receiver {
 	}	
 
 	public static void parsePacket(packet data_packet) {
-		System.out.println("Got packet of type " + data_packet.getType() + "with sequence " + data_packet.getSeqNum());
-		System.out.println("expecting ack " + (updated_seq_num+1) % SeqNumModulo);
 
 		if(data_packet.getType() == 1 || data_packet.getType() == 2)
 		{
