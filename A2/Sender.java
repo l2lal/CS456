@@ -96,7 +96,8 @@ public class Sender {
     expecting_EOT = false;  
     
     sender.start();
-    receive_acks.start(); 
+    receive_acks.start();
+    return;  
   } //main
 
   private static void validateArgs(String[] args) throws Exception {
@@ -290,7 +291,8 @@ public class Sender {
 
     setEotExpected(); 
 
-    while(!eot_received) {
+    while(!eot_received) 
+    {
       System.out.println("Waiting for buffer to empty");
       System.out.println("size of linked list is " + not_acked_packets.size());
     }
@@ -299,7 +301,8 @@ public class Sender {
       seq_log_handle.close(); 
     } catch (IOException e) {
       System.out.println("Error: Cannot close file"); 
-    } 
+    }
+    return;  
 
   }
 
@@ -343,7 +346,8 @@ public class Sender {
     System.out.println("EOT Received. Closing client socket"); 
 
     client_socket.close();
-    try { ack_log_handle.close(); } catch (IOException e) {System.out.println("Error: Cannot close ack log file"); } 
+    try { ack_log_handle.close(); } catch (IOException e) {System.out.println("Error: Cannot close ack log file"); }
+    return;  
       
   } 
   
