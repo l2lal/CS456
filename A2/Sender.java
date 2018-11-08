@@ -56,7 +56,8 @@ public class Sender {
   static int emulator_port; 
   static int sender_port;
   static String file_name;
-  static boolean expecting_EOT = false; 
+  static boolean expecting_EOT = false;
+  static boolean eot_received = false; 
 
   public static void main(String[] args) throws Exception {
 
@@ -290,7 +291,12 @@ public class Sender {
     setEotExpected(); 
 
     while(not_acked_packets.size() != 0) {System.out.println("Waiting for buffer to empty");}
-    try { seq_log_handle.close(); } catch (IOException e) {System.out.println("Error: Cannot close file"); } 
+    try { 
+      System.out.println("Closing sequence log handle");
+      seq_log_handle.close(); 
+    } catch (IOException e) {
+      System.out.println("Error: Cannot close file"); 
+    } 
 
   }
 
@@ -305,7 +311,7 @@ public class Sender {
         DatagramPacket receive_packet = new DatagramPacket(receive_data, receive_data.length);
 
         //always-on receiver thread for client
-        while(true)
+        while(true && !eot_received)
         {
           System.out.println("Receiver still on...");
           client_socket.receive(receive_packet);
@@ -316,18 +322,9 @@ public class Sender {
             ack_log_handle.write(String.valueOf(ack_packet.getSeqNum()));
             ack_log_handle.newLine();
 
-            if(isEotExpected())
-            {
-              if(eotParsed(ack_packet))
-                {
-                  break;  
-                }
+            parseAck(ack_packet); 
+
             
-              else
-              {
-                parseAck(ack_packet);
-              }  
-            }
           } catch (Exception e) {
             System.out.println("Error: Receiver thread failure"); 
           }
@@ -426,6 +423,17 @@ public class Sender {
         j++; 
       }
       
+    }
+    else if(ack_packet.getType() == 2) // got EOT, means everything received. 
+    {
+      int j = 0; 
+      while(j <= not_acked_packets.size())
+      {
+        not_acked_packets.removeFirst(); 
+        j++; 
+      }
+      eot_received = true; 
+
     }    
   }
 
