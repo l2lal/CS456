@@ -111,7 +111,7 @@ public class Receiver {
 					//parse packet
 					//if DATA type
 					parsePacket(data_packet);
-					
+
 				} catch (Exception e) {
 					System.out.println("Error: Cannot parse incoming data.");
 				}
@@ -195,6 +195,7 @@ public class Receiver {
 				//data packet, so write it to a file
 				else
 				{
+					System.out.println("Writing to output file, " + file_name);	
 					try {
 						file_handle.write(new String(data_packet.getData())); 
 					} catch (IOException e) {

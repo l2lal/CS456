@@ -15,8 +15,8 @@ import java.io.BufferedWriter;
 
 public class Sender {
   private final static int N = 10;
-  private final static  int TIMEOUT_VAL = 100;
-  private final static int maxDataLength = 500;
+  private final static  int Timeout_val = 10;
+  private final static int MaxDataLength = 500;
   private final static int SeqNumModulo = 32;
 
   private static long file_length;
@@ -74,7 +74,7 @@ public class Sender {
     client_socket = new DatagramSocket(sender_port); 
 
     //create timer member
-    waiter = new Waiter(TIMEOUT_VAL);  
+    waiter = new Waiter(Timeout_val);  
 
     //Filehandle
     target_file = new File(file_name); 
@@ -212,7 +212,7 @@ public class Sender {
 
   public static void rdtSend() {
     int off = 0; 
-    char[] cbuf = new char[maxDataLength]; 
+    char[] cbuf = new char[MaxDataLength]; 
     
     while(file_length - off > 0)
     {
@@ -221,7 +221,7 @@ public class Sender {
       if(windowNotFull())
       {
         //determine length of file left to send
-        long len = (file_length - off) > maxDataLength ? maxDataLength : (file_length - off);
+        long len = (file_length - off) > MaxDataLength ? MaxDataLength : (file_length - off);
 
         //read file using file handle and place into string
         try {
