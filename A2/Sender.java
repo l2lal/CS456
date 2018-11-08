@@ -364,7 +364,7 @@ public class Sender {
     //file data all sent, now send EOT
     //send EOT, let receiver deal with sending appropriate ACKs and its own EOT
     //wait for window to open space, sleep for a bit if full
-    while(!windowNotFull())
+    while(not_acked_packets.size() != 0)
     {
       try { Thread.sleep(1*1000); } catch (Exception e) {e.printStackTrace(); System.exit(-1);}
     }
