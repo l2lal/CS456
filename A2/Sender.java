@@ -437,6 +437,7 @@ public class Sender {
       {
         if(not_acked_packets.get(i).getSeqNum() == ack_packet.getSeqNum())
         {
+          System.out.println("found ack at index: " + i);
           index = i; 
           break;
         }
@@ -444,6 +445,7 @@ public class Sender {
 
       if(index >= not_acked_packets.size())
       {
+        System.out.println("ACK NOT IN WINDOW");
         return; //ignore duplicate or ack's that don't reflect our window packets
       }
 
@@ -461,7 +463,7 @@ public class Sender {
       int j = 0; 
       while(j <= index)
       {
-        not_acked_packets.removeFirst();
+        not_acked_packets.remove(0);
         j++; 
       }
       
