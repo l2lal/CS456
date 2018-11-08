@@ -13,9 +13,6 @@ import java.io.FileWriter;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 
-
-
-
 public class Sender {
   private final static int N = 10;
   private final static  int TIMEOUT_VAL = 100;
@@ -199,7 +196,8 @@ public class Sender {
       System.out.println("Sender thread kickoff");
 
       //get file data!! 
-       rdtSend(); 
+       rdtSend();
+       return;  
     }
   }
 
@@ -207,7 +205,8 @@ public class Sender {
 
     public void run(){
       System.out.println("Ack Receive thread kickoff");
-      rdtReceive();  
+      rdtReceive();
+      return;   
     }
   }
 
