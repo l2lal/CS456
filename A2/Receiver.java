@@ -104,7 +104,7 @@ public class Receiver {
 					packet data_packet = packet.parseUDPdata(receive_packet.getData());
 					//write incoming packet to log file
 					System.out.println("Got a packet with sequence" + data_packet.getSeqNum());
-					System.out.println("Expecting a sequence of: " + ((updated_seq_num+1)%SeqNumModulo));
+					System.out.println("Expecting a sequence of: " + updated_seq_num);
 
 					ack_log_handle.write(String.valueOf(data_packet.getSeqNum()));
 					ack_log_handle.newLine();
@@ -132,7 +132,7 @@ public class Receiver {
 						//UDP formatted datagram sent through receiver socket to emulator
 						System.out.println("Sending EOT with seqence: " + ack_packet.getSeqNum());
 						server_socket.send(send_packet);
-						updated_seq_num = (updated_seq_num + 1) % SeqNumModulo;
+						//updated_seq_num = (updated_seq_num + 1) % SeqNumModulo;
 					} catch (Exception e) {
 						System.out.println("Error: Cannot create EOT packet.");
 					}
@@ -150,7 +150,7 @@ public class Receiver {
 						//UDP formatted datagram sent through receiver socket to emulator
 						System.out.println("Sending ack with seqence: " + ack_packet.getSeqNum());
 						server_socket.send(send_packet);
-						updated_seq_num = (updated_seq_num + 1) % SeqNumModulo;
+						//updated_seq_num = (updated_seq_num + 1) % SeqNumModulo;
 					} catch (Exception e) {
 						System.out.println("Error: Cannot create ACK packet.");
 					}
@@ -180,13 +180,14 @@ public class Receiver {
 
 	public static void parsePacket(packet data_packet) {
 		System.out.println("Got packet of type " + data_packet.getType() + "with sequence " + data_packet.getSeqNum());
-		System.out.println("expecting ack " + updated_seq_num);
+		System.out.println("expecting ack " + (updated_seq_num+1) % SeqNumModulo);
 
 		if(data_packet.getType() == 1 || data_packet.getType() == 2)
 		{
 			//check to see we're getting the right ack
-			if(data_packet.getSeqNum() == updated_seq_num)
+			if(data_packet.getSeqNum() == (updated_seq_num+1) % SeqNumModulo)
 			{
+				updated_seq_num = data_packet.getSeqNum(); 
 
 				if(data_packet.getType() == 2)
 				{
@@ -194,7 +195,7 @@ public class Receiver {
 				}
 
 				//data packet, so write it to a file
-				else
+				else if(data_packet.getType() == 1)
 				{
 					System.out.println("Writing to output file");	
 					try {
