@@ -17,7 +17,7 @@ public class Receiver {
 	static BufferedWriter ack_log_handle;
 
 	static boolean isEOT = false;
-	static int updated_seq_num = -1;
+	static int updated_seq_num = 0;
 	private final static int SeqNumModulo = 32;
 	
 	public static void main(String[] args) throws Exception {
@@ -116,45 +116,48 @@ public class Receiver {
 					System.out.println("Error: Cannot parse incoming data.");
 				}
 				 
+				if(updated_seq_num >= 0)
+				{
+					//if EOT type
+					if(isEOT)
+					{
+						try {
+							packet ack_packet = packet.createEOT(updated_seq_num);
+							//get into byte array format
+							byte[] arr = ack_packet.getUDPdata(); 
+
+							//create UDP datagram from byte array
+							DatagramPacket send_packet = new DatagramPacket(arr, arr.length, emulator_addr, emulator_port);
+
+							//UDP formatted datagram sent through receiver socket to emulator
+							System.out.println("Sending EOT with seqence: " + ack_packet.getSeqNum());
+							server_socket.send(send_packet);
+							//updated_seq_num = (updated_seq_num + 1) % SeqNumModulo;
+						} catch (Exception e) {
+							System.out.println("Error: Cannot create EOT packet.");
+						}
+					}
+					else
+					{
+						try {
+							packet ack_packet = packet.createACK(updated_seq_num);
+							//get into byte array format
+							byte[] arr = ack_packet.getUDPdata(); 
+
+							//create UDP datagram from byte array
+							DatagramPacket send_packet = new DatagramPacket(arr, arr.length, emulator_addr, emulator_port);
+
+							//UDP formatted datagram sent through receiver socket to emulator
+							System.out.println("Sending ack with seqence: " + ack_packet.getSeqNum());
+							server_socket.send(send_packet);
+							//updated_seq_num = (updated_seq_num + 1) % SeqNumModulo;
+						} catch (Exception e) {
+							System.out.println("Error: Cannot create ACK packet.");
+						}
+
+					}
+				}
 				
-				//if EOT type
-				if(isEOT)
-				{
-					try {
-						packet ack_packet = packet.createEOT(updated_seq_num);
-						//get into byte array format
-						byte[] arr = ack_packet.getUDPdata(); 
-
-						//create UDP datagram from byte array
-						DatagramPacket send_packet = new DatagramPacket(arr, arr.length, emulator_addr, emulator_port);
-
-						//UDP formatted datagram sent through receiver socket to emulator
-						System.out.println("Sending EOT with seqence: " + ack_packet.getSeqNum());
-						server_socket.send(send_packet);
-						//updated_seq_num = (updated_seq_num + 1) % SeqNumModulo;
-					} catch (Exception e) {
-						System.out.println("Error: Cannot create EOT packet.");
-					}
-				}
-				else
-				{
-					try {
-						packet ack_packet = packet.createACK(updated_seq_num);
-						//get into byte array format
-						byte[] arr = ack_packet.getUDPdata(); 
-
-						//create UDP datagram from byte array
-						DatagramPacket send_packet = new DatagramPacket(arr, arr.length, emulator_addr, emulator_port);
-
-						//UDP formatted datagram sent through receiver socket to emulator
-						System.out.println("Sending ack with seqence: " + ack_packet.getSeqNum());
-						server_socket.send(send_packet);
-						//updated_seq_num = (updated_seq_num + 1) % SeqNumModulo;
-					} catch (Exception e) {
-						System.out.println("Error: Cannot create ACK packet.");
-					}
-
-				}
 
 				
 				if(isEOT)

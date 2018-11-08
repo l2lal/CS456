@@ -225,9 +225,13 @@ public class Sender {
     while(read_result != -1)
     {
       //System.out.println("Still have stuff to send");
-
+      while(!windowNotFull())
+      {
+        System.out.println("Waiting for window to open"); 
+      }
       if(windowNotFull())
       {
+        System.out.println("List size is now: " + not_acked_packets.size()); 
         //determine length of file left to send
         //long len = (file_length - off) > MaxDataLength ? MaxDataLength : (file_length - off);
 
@@ -284,10 +288,10 @@ public class Sender {
     }//while
 
     //send EOT, let receiver deal with sending appropriate ACKs and its own EOT
-    while(windowNotFull())
+    while(!windowNotFull())
     {
       //wait until window opens to send eot packet
-      //try { Thread.sleep(1*1000); } catch (Exception e) {e.printStackTrace(); }
+      try { Thread.sleep(1*1000); } catch (Exception e) {e.printStackTrace(); }
     }
     packet eot_packet; 
     try { 
@@ -354,7 +358,7 @@ public class Sender {
           
 
           //try { Thread.sleep(1*1000); } catch (Exception e) { }
-          if(eot_received)
+          if(eot_received && isEotExpected())
           {
             System.out.println("EOT RECEIVED!"); 
             break;
@@ -452,7 +456,7 @@ public class Sender {
       base = (ack_packet.getSeqNum() + 1) % SeqNumModulo; 
       waiter.stopTimerTask();
 
-      //restart timer if more unacked messages
+     //restart timer if more unacked messages
       if(base != next_seq_num)
       {
         waiter.startTimerTask(); 
@@ -477,7 +481,6 @@ public class Sender {
         j++; 
       }
       eot_received = true; 
-
     }    
   }
 
