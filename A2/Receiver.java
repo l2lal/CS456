@@ -139,7 +139,7 @@ public class Receiver {
 				else
 				{
 					try {
-						packet ack_packet = packet.createAck(updated_seq_num);
+						packet ack_packet = packet.createACK(updated_seq_num);
 						//get into byte array format
 						byte[] arr = ack_packet.getUDPdata(); 
 
