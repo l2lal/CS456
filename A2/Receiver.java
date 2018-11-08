@@ -103,7 +103,7 @@ public class Receiver {
 					packet data_packet = packet.parseUDPdata(receive_packet.getData());
 					//write incoming packet to log file
 					System.out.println("Got a packet with sequence" + data_packet.getSeqNum());
-					System.out.println("Expecting a sequence of: " + ((updated_seq_num+1)%SeqNumModulo);
+					System.out.println("Expecting a sequence of: " + ((updated_seq_num+1)%SeqNumModulo));
 
 					ack_log_handle.write(String.valueOf(data_packet.getSeqNum()));
 					ack_log_handle.newLine();
