@@ -346,7 +346,7 @@ public class Sender {
 
     client_socket.close();
     try { ack_log_handle.close(); } catch (IOException e) {System.out.println("Error: Cannot close ack log file"); }
-    waiter.cancel(); 
+    waiter.timer.cancel(); 
     return;  
       
   } 
