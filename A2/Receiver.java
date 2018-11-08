@@ -111,6 +111,7 @@ public class Receiver {
 					//parse packet
 					//if DATA type
 					parsePacket(data_packet);
+					
 				} catch (Exception e) {
 					System.out.println("Error: Cannot parse incoming data.");
 				}
@@ -176,16 +177,15 @@ public class Receiver {
 
 	public static void parsePacket(packet data_packet) {
 		System.out.println("Got packet of type " + data_packet.getType() + "with sequence " + data_packet.getSeqNum());
-		System.out.println("expecting ack " + ((updated_seq_num + 1)%SeqNumModulo));
+		System.out.println("expecting ack " + updated_seq_num);
 
 		if(data_packet.getType() == 1 || data_packet.getType() == 2)
 		{
-			int expected_ack = (updated_seq_num + 1) % SeqNumModulo;
 			//check to see we're getting the right ack
-			if(data_packet.getSeqNum() == expected_ack)
+			if(data_packet.getSeqNum() == updated_seq_num)
 			{
 				//update latest received ack and write data to input file
-				updated_seq_num = expected_ack;
+				updated_seq_num = (updated_seq_num + 1) % SeqNumModulo;
 
 				if(data_packet.getType() == 2)
 				{
