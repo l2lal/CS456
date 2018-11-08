@@ -174,12 +174,12 @@ public class Sender {
 
     public void stopTimerTask()
     {
-      System.out.println("Stopping timer...");
+      //System.out.println("Stopping timer...");
       if(waiter_task != null) {
-        System.out.println("Timer isn't null");
+        //System.out.println("Timer isn't null");
         waiter_task.cancel(); 
       }
-      System.out.println("Timer stopped."); 
+      //System.out.println("Timer stopped."); 
     }
 
     class WaiterTask extends TimerTask {
@@ -213,6 +213,7 @@ public class Sender {
   public static void rdtSend() {
     char[] cbuf = new char[MaxDataLength]; 
     int read_result = 0; 
+    
     try {
       read_result = file_handle.read(cbuf);
     } catch (IOException e) {
@@ -223,7 +224,7 @@ public class Sender {
 
     while(read_result != -1)
     {
-      System.out.println("Still have stuff to send");
+      //System.out.println("Still have stuff to send");
 
       if(windowNotFull())
       {
@@ -239,7 +240,7 @@ public class Sender {
           //int read_res = file_handle.read(cbuf, 0, (int)len);
 
           String strData = String.copyValueOf(cbuf);
-          System.out.println("Data to send: " + strData);
+          //System.out.println("Data to send: " + strData);
           packet orig_packet; 
           
           orig_packet = packet.createPacket(next_seq_num, strData);
@@ -247,21 +248,25 @@ public class Sender {
           //create UDP datagrapm from this
           DatagramPacket send_packet = new DatagramPacket(arr, arr.length, emulator_addr, emulator_port);
 
-          System.out.println("Sending data packet with sequence: " + orig_packet.getSeqNum()); 
+          System.out.println("Send sequence: " + orig_packet.getSeqNum()); 
 
           client_socket.send(send_packet);
           seq_log_handle.write(String.valueOf(orig_packet.getSeqNum()));
           seq_log_handle.newLine();
-          next_seq_num = (next_seq_num + 1) % SeqNumModulo;
           addToList(orig_packet);
-          System.out.println("Size of list is now: " + not_acked_packets.size()); 
+          System.out.println("List size: " + not_acked_packets.size()); 
           
           if(timerNeeded())
           {
-            System.out.println("We are about to kickoff timer");
+            //System.out.println("We are about to kickoff timer");
             waiter.stopTimerTask();
             waiter.startTimerTask(); 
           }
+          next_seq_num = (next_seq_num + 1) % SeqNumModulo;
+
+          //read next chunk of file for next iteration
+          read_result = file_handle.read(cbuf);
+
   
         } catch (IOException e) {
           System.out.println("Error: Failed read of file");
@@ -274,15 +279,7 @@ public class Sender {
         
       }
 
-      try {
-        read_result = file_handle.read(cbuf);
-      } catch (IOException e) {
-        System.out.println("Cannot read file");
-        e.printStackTrace();
-        System.exit(-1);  
-      } 
-
-      try { Thread.sleep(1*1000); } catch (Exception e) { } 
+      //try { Thread.sleep(1*1000); } catch (Exception e) { } 
 
     }//while
 
@@ -290,7 +287,7 @@ public class Sender {
     while(!windowNotFull())
     {
       //wait until window opens to send eot packet
-      try { Thread.sleep(1*1000); } catch (Exception e) {e.printStackTrace(); }
+      //try { Thread.sleep(1*1000); } catch (Exception e) {e.printStackTrace(); }
     }
     packet eot_packet; 
     try { 
@@ -301,7 +298,7 @@ public class Sender {
       //create UDP datagrapm from this
       DatagramPacket send_packet = new DatagramPacket(arr, arr.length, emulator_addr, emulator_port);
 
-      System.out.println("Sending EOT packet with sequence: " + eot_packet.getSeqNum()); 
+      System.out.println("EOT sequence: " + eot_packet.getSeqNum()); 
 
       //UDP formatted datagram sent through client socket to emulator
       client_socket.send(send_packet);
@@ -315,8 +312,8 @@ public class Sender {
 
     while(!eot_received) 
     {
-      System.out.println("Waiting for buffer to empty");
-      System.out.println("size of linked list is " + not_acked_packets.size());
+      //System.out.println("Waiting for buffer to empty");
+      //System.out.println("size of linked list is " + not_acked_packets.size());
     }
     try { 
       System.out.println("Closing sequence log handle");
@@ -341,7 +338,7 @@ public class Sender {
         //always-on receiver thread for client
         while(true)
         {
-          System.out.println("Receiver still on...");
+          //System.out.println("Receiver still on...");
           client_socket.receive(receive_packet);
           System.out.println("Receiver got something!");
           try {
@@ -355,14 +352,14 @@ public class Sender {
           }
           
 
-          try { Thread.sleep(1*1000); } catch (Exception e) { }
+          //try { Thread.sleep(1*1000); } catch (Exception e) { }
           if(eot_received)
           {
             break;
           } 
         }
       } catch (IOException e) {
-          System.out.println(e);
+          e.printStackTrace();
       }
     // should close serverSocket in finally block
     //close socket HERE
@@ -380,7 +377,7 @@ public class Sender {
     //kick off another timer
     waiter.stopTimerTask(); 
     waiter.startTimerTask(); 
-    System.out.println("Retransmitting " + not_acked_packets.size() + " packets"); 
+    System.out.println("Time out. Retransmitting " + not_acked_packets.size() + " packets"); 
 
     for(int i = 0; i < not_acked_packets.size(); i++)
     {
