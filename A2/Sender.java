@@ -177,7 +177,8 @@ public class Sender {
     public void stopTimerTask()
     {
       System.out.println("Stopping timer...");
-      waiter_task.cancel(); 
+      waiter.waiter_task.cancel();
+      System.out.println("Timer stopped."); 
     }
 
     class WaiterTask extends TimerTask {
@@ -255,6 +256,7 @@ public class Sender {
           off = off + (int)len; 
         } catch (Exception e) {
           System.out.println("Error: Failed to create and send packet HERE");
+          e.printStackTrace(); 
           System.exit(-1); 
         } 
       }
