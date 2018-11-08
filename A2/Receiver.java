@@ -94,7 +94,7 @@ public class Receiver {
 	    	//format buffer to datagram
 	    	DatagramPacket receive_packet = new DatagramPacket(receive_data, receive_data.length);
 
-	    	while(true)
+	    	while(true && !isEOT)
 	    	{
 		    	//blocking call, wait for message
 				server_socket.receive(receive_packet);
