@@ -172,7 +172,8 @@ public class Receiver {
 	    //close socket, sending only EOT once, assuming it doesn't get messed up along the way.
 	    System.out.println("EOT sent, closing connection"); 
 	    server_socket.close();
-	    ack_log_handle.close(); 
+	    ack_log_handle.close();
+	    file_handle.close();  
 
 		} catch (IOException e) {
 		System.out.println(e);
@@ -199,6 +200,7 @@ public class Receiver {
 				{
 					System.out.println("Writing to output file");	
 					try {
+						System.out.println("Data is :" + data_packet.getData());
 						file_handle.write(new String(data_packet.getData())); 
 					} catch (IOException e) {
 						System.out.println("Error: Cannot write data to end file.");
