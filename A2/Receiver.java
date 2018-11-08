@@ -32,6 +32,7 @@ public class Receiver {
 		String file_name = args[3]; 
 
 		file_handle = new BufferedWriter(new FileWriter(file_name));
+		System.out.println("output file name is " + file_name);
 		ack_log_handle =new BufferedWriter(new FileWriter("arrival.log"));
 
 		Receiver.run(emulator_addr, emulator_port, receiver_port, file_name);
@@ -195,7 +196,7 @@ public class Receiver {
 				//data packet, so write it to a file
 				else
 				{
-					System.out.println("Writing to output file, " + file_name);	
+					System.out.println("Writing to output file");	
 					try {
 						file_handle.write(new String(data_packet.getData())); 
 					} catch (IOException e) {
