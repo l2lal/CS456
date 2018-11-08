@@ -201,7 +201,7 @@ public class Receiver {
 					System.out.println("Writing to output file");	
 					try {
 						System.out.println("Data is :" + data_packet.getData());
-						file_handle.write(new String(data_packet.getData())); 
+						file_handle.write(new String(data_packet.getData(), "UTF-8")); 
 					} catch (IOException e) {
 						System.out.println("Error: Cannot write data to end file.");
 					}

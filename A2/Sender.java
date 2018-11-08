@@ -228,7 +228,7 @@ public class Sender {
       while(!windowNotFull())
       {
         System.out.println("Waiting for window to open");
-        try { Thread.sleep(1*1000); } catch (Exception e) { }  
+        try { Thread.sleep(1*1000); } catch (Exception e) { e.printStackTrace(); System.exit(-1); }  
       }
       if(windowNotFull())
       {
@@ -279,7 +279,8 @@ public class Sender {
           System.exit(-1); 
         } catch (Exception e) {
           System.out.println("Error: Cannot create packet");
-          e.printStackTrace(); 
+          e.printStackTrace();
+          System.exit(-1); 
         }
         
       }
@@ -292,7 +293,7 @@ public class Sender {
     while(!windowNotFull())
     {
       //wait until window opens to send eot packet
-      try { Thread.sleep(1*1000); } catch (Exception e) {e.printStackTrace(); }
+      try { Thread.sleep(1*1000); } catch (Exception e) {e.printStackTrace(); System.exit(-1);}
     }
     packet eot_packet; 
     try { 
@@ -311,21 +312,22 @@ public class Sender {
       seq_log_handle.newLine(); 
       next_seq_num = (next_seq_num + 1) % SeqNumModulo;
       addToList(eot_packet);
-    } catch (Exception e) { }
+    } catch (Exception e) { e.printStackTrace(); System.exit(-1); }
 
     setEotExpected(); 
 
     while(!eot_received) 
     {
       System.out.println("Waiting for buffer to empty");
-      try { Thread.sleep(1*1000); } catch (Exception e) { }
+      try { Thread.sleep(1*1000); } catch (Exception e) { System.exit(-1); }
       //System.out.println("size of linked list is " + not_acked_packets.size());
     }
     try { 
       System.out.println("Closing sequence log handle");
       if(seq_log_handle != null) seq_log_handle.close(); 
     } catch (IOException e) {
-      System.out.println("Error: Cannot close file"); 
+      System.out.println("Error: Cannot close file");
+      System.exit(-1); 
     }
     return;  
 
@@ -354,7 +356,8 @@ public class Sender {
 
             
           } catch (Exception e) {
-            System.out.println("Error: Receiver thread failure"); 
+            System.out.println("Error: Receiver thread failure");
+            System.exit(-1); 
           }
           
 
@@ -371,6 +374,7 @@ public class Sender {
         waiter.timer.cancel(); 
         file_handle.close(); 
       } catch (IOException e) {
+          System.exit(-1);
           e.printStackTrace();
       }
     // should close serverSocket in finally block
@@ -404,13 +408,14 @@ public class Sender {
       DatagramPacket send_packet = new DatagramPacket(arr, arr.length, emulator_addr, emulator_port);
 
       //UDP formatted datagram sent through client socket to emulator
-      try { client_socket.send(send_packet); } catch (IOException e) {System.out.println("Error: Cannot send packet"); } 
+      try { client_socket.send(send_packet); } catch (IOException e) {System.out.println("Error: Cannot send packet"); System.exit(-1); } 
 
       try { 
         seq_log_handle.write(String.valueOf(list_packet.getSeqNum()));
         seq_log_handle.newLine(); 
       } catch (IOException e) {
-        System.out.println("Error: Cannot write seq"); 
+        System.out.println("Error: Cannot write seq");
+        System.exit(-1);  
       } 
  
     }
@@ -436,7 +441,8 @@ public class Sender {
       ack_log_handle.write(String.valueOf(ack_packet.getSeqNum()));
       ack_log_handle.newLine();
     } catch (IOException e) {
-      e.printStackTrace(); 
+      e.printStackTrace();
+      System.exit(-1); 
     }
 
     int index = 0;
