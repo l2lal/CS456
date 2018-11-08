@@ -93,8 +93,7 @@ public class Sender {
     expecting_EOT = false;  
     
     sender.start();
-    receive_acks.start();
-    return;  
+    receive_acks.start();  
   } //main
 
   private static void validateArgs(String[] args) throws Exception {
@@ -185,7 +184,8 @@ public class Sender {
 
     class WaiterTask extends TimerTask {
         public void run() {
-            reTransmit(); 
+            reTransmit();
+            return;  
         }
     }
   }
