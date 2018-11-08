@@ -1,3 +1,15 @@
+/* Sender Program
+Computer Networks (CS 456)
+Number of parameters: 4
+Parameter:
+    $1: host address of network emulator
+    $2: emulator UDP port to receive from Sender
+    $3: Sender UDP port to receive acks from emulator
+    $4: name of file to transfer
+
+#Author: Lalit Lal
+*/
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,10 +26,12 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 
 public class Sender {
-  private final static int N = 10;
+  //constants
+  private final static int N = 10; //Window size
   private final static  int Timeout_val = 10;
-  private final static int MaxDataLength = 500;
+  private final static int MaxDataLength = 500; 
   private final static int SeqNumModulo = 32;
+
 
   private static long file_length;
 
@@ -40,6 +54,7 @@ public class Sender {
   static BufferedWriter seq_log_handle;
   static BufferedWriter ack_log_handle;
 
+  //send and receive threads
   static Thread sender;
   static Thread receive_acks;
 
@@ -49,13 +64,25 @@ public class Sender {
   // next index to send a message
   static int next_seq_num = 0;
 
+  //placeholders for inputs
   static InetAddress emulator_addr;
   static int emulator_port; 
   static int sender_port;
   static String file_name;
+
+  //globally used states
   static boolean expecting_EOT = false;
   static boolean eot_received = false; 
 
+
+  /*Function main - validates input, initializes handles, and runs the send and rcv threads
+  Parameters 4:
+    $1: host address of network emulator
+    $2: emulator UDP port to receive from Sender
+    $3: Sender UDP port to receive acks from emulator
+    $4: name of file to transfer
+  Return: None
+  */
   public static void main(String[] args) throws Exception {
 
     //validate args
@@ -90,12 +117,22 @@ public class Sender {
     sender = new Thread(new Send_Thread()); 
     receive_acks = new Thread(new Ack_Receive()); 
 
+    //initialize global state
     expecting_EOT = false;  
     
+    //start threads
     sender.start();
     receive_acks.start();  
   } //main
 
+  /*Function validateArgs - validates input
+  Parameters: 4
+    $1: host address of network emulator
+    $2: emulator UDP port to receive from Sender
+    $3: Sender UDP port to receive acks from emulator
+    $4: name of file to transfer
+  Return: None
+  */
   private static void validateArgs(String[] args) throws Exception {
     //check number of args
     if(args.length != 4) {
@@ -125,6 +162,13 @@ public class Sender {
     }
   }
 
+  /*Function validIP - uses regex to validate the host ip address input
+  Parameters: 1
+      $1: ip address of network emulator
+
+  Return: 1
+    $1: True if valid hostname, false otherwise
+    */
   private static boolean validIP(final String ip) throws Exception {
     
     // taken from https://stackoverflow.com/questions/22614349/checking-if-a-string-can-be-an-ip-address-in-java
@@ -138,6 +182,13 @@ public class Sender {
     return isMatch;             
   }
 
+  /*Function validHost - uses regex to validate the hostname input
+  Parameters: 1
+      $1: hostname of network emulator
+
+  Return: 1
+    $1: True if valid hostname, false otherwise
+    */
   private static boolean validHost(final String host) throws Exception {
     
     // taken from https://stackoverflow.com/questions/22614349/checking-if-a-string-can-be-an-ip-address-in-java
@@ -155,16 +206,28 @@ public class Sender {
       }
   }
 
+  // Custom class that implements timer
   public static class Waiter {
     Timer timer;
     int seconds;
     TimerTask waiter_task; 
 
+    /*Function constructor
+    Parameters: 1
+      $1: timeout in seconds
+
+    Return: waiter object
+    */
     public Waiter(int seconds) {
         timer = new Timer();
         this.seconds = seconds; 
     }
 
+     /*Function startTimerTask - starts timer
+    Parameters: None
+
+    Return: None
+    */
     public void startTimerTask()
     {
       System.out.println("Starting Timer...");
@@ -172,6 +235,11 @@ public class Sender {
       timer.schedule(waiter_task, this.seconds*1000);
     }
 
+    /*Function stopTimerTask - stops timer
+    Parameters: None
+
+    Return: None
+    */
     public void stopTimerTask()
     {
       //System.out.println("Stopping timer...");
@@ -182,6 +250,7 @@ public class Sender {
       //System.out.println("Timer stopped."); 
     }
 
+    //subclass that builds from a task
     class WaiterTask extends TimerTask {
         public void run() {
             reTransmit();
@@ -190,6 +259,7 @@ public class Sender {
     }
   }
 
+  //sending thread
   public static class Send_Thread implements Runnable {
 
     public void run(){
@@ -201,6 +271,7 @@ public class Sender {
     }
   }
 
+  //receiving thread
   public static class Ack_Receive implements Runnable {
 
     public void run(){
@@ -210,11 +281,20 @@ public class Sender {
     }
   }
 
+    /*Function rdtSend - function executed by sending thread; this sends input file data to emulator
+    Parameters: None
+
+    Return: None
+    */
   public static void rdtSend() {
-    char[] cbuf = new char[MaxDataLength]; 
+
+    //create file reading buffer
+    char[] cbuf = new char[MaxDataLength];
+    //store result of each file read 
     int read_result = 0; 
     
     try {
+      //read 500byte chunk of file into buffer
       read_result = file_handle.read(cbuf);
     } catch (IOException e) {
       System.out.println("Cannot read file");
@@ -222,56 +302,49 @@ public class Sender {
       System.exit(-1); 
     }
 
+    //while file still has data, send stuff
     while(read_result != -1)
     {
-      //System.out.println("Still have stuff to send");
+      //while window is full, wait. Sleep for a bit
       while(!windowNotFull())
       {
-        System.out.println("Waiting for window to open");
         try { Thread.sleep(1*1000); } catch (Exception e) { e.printStackTrace(); System.exit(-1); }  
       }
+
+      //verify window isn't open before sending chunk
       if(windowNotFull())
       {
-        System.out.println("List size is now: " + not_acked_packets.size()); 
-        //determine length of file left to send
-        //long len = (file_length - off) > MaxDataLength ? MaxDataLength : (file_length - off);
-
-        //read file using file handle and place into string
+        //place file read buffer into a string
         try {
-          //System.out.println("File size is: " + file_length); 
-          //System.out.println("Amount to read is: " + len); 
-          //System.out.println("Offset it " + off);
-          //System.out.println("Index is " + off+(int)len); 
-          //int read_res = file_handle.read(cbuf, 0, (int)len);
+          String strData = String.copyValueOf(cbuf, 0, read_result);
 
-          String strData = String.copyValueOf(cbuf);
-          //System.out.println("Data to send: " + strData);
-          packet orig_packet; 
-          
-          orig_packet = packet.createPacket(next_seq_num, strData);
+          //placeholder for sending packet
+          packet orig_packet = packet.createPacket(next_seq_num, strData);
+
+          //convert it to an array and then into datagram format
           byte[] arr = orig_packet.getUDPdata();
-          //create UDP datagrapm from this
           DatagramPacket send_packet = new DatagramPacket(arr, arr.length, emulator_addr, emulator_port);
 
-          System.out.println("Send sequence: " + orig_packet.getSeqNum()); 
-
+          //send packet through client socket, logging the sequence and managing list of unack'd packets
           client_socket.send(send_packet);
           seq_log_handle.write(String.valueOf(orig_packet.getSeqNum()));
           seq_log_handle.newLine();
           addToList(orig_packet);
           System.out.println("List size: " + not_acked_packets.size()); 
           
+          //check if sent item is first
           if(timerNeeded())
           {
-            //System.out.println("We are about to kickoff timer");
             waiter.stopTimerTask();
             waiter.startTimerTask(); 
           }
+
+          //update index of next packet sequence
           next_seq_num = (next_seq_num + 1) % SeqNumModulo;
 
           //read next chunk of file for next iteration
           read_result = file_handle.read(cbuf);
-
+         
   
         } catch (IOException e) {
           System.out.println("Error: Failed read of file");
@@ -285,42 +358,42 @@ public class Sender {
         
       }
 
-      //try { Thread.sleep(1*1000); } catch (Exception e) { } 
-
     }//while
 
+    //file data all sent, now send EOT
     //send EOT, let receiver deal with sending appropriate ACKs and its own EOT
+    //wait for window to open space, sleep for a bit if full
     while(!windowNotFull())
     {
-      //wait until window opens to send eot packet
       try { Thread.sleep(1*1000); } catch (Exception e) {e.printStackTrace(); System.exit(-1);}
     }
-    packet eot_packet; 
+
     try { 
-      eot_packet = packet.createEOT(next_seq_num); 
+      packet eot_packet = packet.createEOT(next_seq_num); 
     
       //get into byte array format
       byte[] arr = eot_packet.getUDPdata();
       //create UDP datagrapm from this
       DatagramPacket send_packet = new DatagramPacket(arr, arr.length, emulator_addr, emulator_port);
 
-      System.out.println("EOT sequence: " + eot_packet.getSeqNum()); 
-
       //UDP formatted datagram sent through client socket to emulator
       client_socket.send(send_packet);
       seq_log_handle.write(String.valueOf(eot_packet.getSeqNum()));
       seq_log_handle.newLine(); 
+
+      //update sequence
       next_seq_num = (next_seq_num + 1) % SeqNumModulo;
+      //add EOT packet to unack'd list
       addToList(eot_packet);
     } catch (Exception e) { e.printStackTrace(); System.exit(-1); }
 
+    //set global state - we are waiting for EOT return
     setEotExpected(); 
 
+    //wait for EOT to be received, sleep for a bit. 
     while(!eot_received) 
     {
-      System.out.println("Waiting for buffer to empty");
       try { Thread.sleep(1*1000); } catch (Exception e) { System.exit(-1); }
-      //System.out.println("size of linked list is " + not_acked_packets.size());
     }
     try { 
       System.out.println("Closing sequence log handle");
@@ -331,7 +404,7 @@ public class Sender {
     }
     return;  
 
-  }
+  } //rdtSend
 
   public static void rdtReceive() {
 
