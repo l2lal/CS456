@@ -28,7 +28,7 @@ import java.io.BufferedWriter;
 public class Sender {
   //constants
   private final static int N = 10; //Window size
-  private final static  int Timeout_val = 700; //milliseconds
+  private final static  int Timeout_val = 1000; //milliseconds
   private final static int MaxDataLength = 500; 
   private final static int SeqNumModulo = 32;
 
