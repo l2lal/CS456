@@ -324,9 +324,6 @@ public class Sender {
           try {
             packet ack_packet = packet.parseUDPdata(receive_packet.getData());
 
-            ack_log_handle.write(String.valueOf(ack_packet.getSeqNum()));
-            ack_log_handle.newLine();
-
             parseAck(ack_packet); 
 
             
@@ -394,6 +391,10 @@ public class Sender {
 
   // synchronized methods, only one can happen at a time
   public static synchronized void parseAck(packet ack_packet) {
+
+    ack_log_handle.write(String.valueOf(ack_packet.getSeqNum()));
+    ack_log_handle.newLine();
+    
     int index = 0;
     System.out.println("type of packet is " + ack_packet.getType()); 
 
