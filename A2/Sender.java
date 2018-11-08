@@ -205,7 +205,6 @@ public class Sender {
 
     public void run(){
       System.out.println("Ack Receive thread kickoff");
-
       rdtReceive();  
     }
   }
@@ -308,6 +307,7 @@ public class Sender {
         //always-on receiver thread for client
         while(true)
         {
+          System.out.println("Receiver still on...");
           client_socket.receive(receive_packet);
           try {
             packet ack_packet = packet.parseUDPdata(receive_packet.getData());
