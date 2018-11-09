@@ -101,7 +101,7 @@ public class Receiver {
 		}
 	}
 
-	/*Function main - valid host, uses regex to validate the hostname input
+	/*Function validHost - uses regex to validate the hostname input
 	Parameters: 1
 	    $1: hostname of network emulator
 

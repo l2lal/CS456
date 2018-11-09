@@ -426,12 +426,12 @@ public class Sender {
         //always-on receiver thread for client
         while(true)
         {
-          //System.out.println("Receiver still on...");
+          //blocking call to receive ack packet from emulator
           client_socket.receive(receive_packet);
           System.out.println("Receiver got something!");
           try {
+            //packet is received, format it and parse it, updating buffer and indexes
             packet ack_packet = packet.parseUDPdata(receive_packet.getData());
-
             parseAck(ack_packet); 
 
             
@@ -440,8 +440,7 @@ public class Sender {
             System.exit(-1); 
           }
           
-
-          //try { Thread.sleep(1*1000); } catch (Exception e) { }
+          //if we were expecting and received an EOT packet
           if(eot_received && isEotExpected())
           {
             System.out.println("EOT RECEIVED!"); 
@@ -449,29 +448,34 @@ public class Sender {
           } 
         }
 
+        //close socket and log handles
         client_socket.close();
         ack_log_handle.close();
         waiter.timer.cancel(); 
-        file_handle.close(); 
+        file_handle.close();
+
       } catch (IOException e) {
           System.exit(-1);
           e.printStackTrace();
       }
     // should close serverSocket in finally block
-    //close socket HERE
+    // close socket HERE
     System.out.println("EOT Received. Closing client socket"); 
 
-    //client_socket.close();
-    //try { ack_log_handle.close(); } catch (IOException e) {System.out.println("Error: Cannot close ack log file"); }
-    //waiter.timer.cancel(); 
-    //file_handle.close();
     return;  
       
   } 
+
+  // THE FOLLOWING ARE SYNCHRONIZED METHODS TO ENSURE THREAD SYNCHRONIZATION //
   
+    /* Function reTransmit - function triggered by timer task in Waiter class to retransmit unack'd packets in buffer
+    Parameters: None
+
+    Return: None
+    */
   public static synchronized void reTransmit() {
 
-    //kick off another timer
+    //kick off another timer; first stop current one
     waiter.stopTimerTask(); 
     waiter.startTimerTask(); 
     System.out.println("Time out. Retransmitting " + not_acked_packets.size() + " packets"); 
@@ -491,6 +495,7 @@ public class Sender {
       try { client_socket.send(send_packet); } catch (IOException e) {System.out.println("Error: Cannot send packet"); System.exit(-1); } 
 
       try { 
+        // log the sequence number of the packet you're sending
         seq_log_handle.write(String.valueOf(list_packet.getSeqNum()));
         seq_log_handle.newLine(); 
       } catch (IOException e) {
@@ -502,20 +507,17 @@ public class Sender {
 
   }
 
-  public static synchronized boolean eotParsed(packet ack_packet) { 
 
-    if(ack_packet.getType() == 2 && not_acked_packets.size() == 1) {
-      System.out.println("Got EOT of sequence: " + ack_packet.getSeqNum()); 
-      not_acked_packets.removeFirst();
-      return true; 
-    }
-    return false; 
-  }
+  /* Function parseAck - function called by rdtReceive to process incoming packets
+  Parameters: packet ack_packet - packet to parse
 
-  // synchronized methods, only one can happen at a time
+  Return: none
+  */
   public static synchronized void parseAck(packet ack_packet) {
+    // Status of finding packet
     boolean found_in_list = false; 
 
+    // write ack packets to log file
     try{
       System.out.println("Writing to ack log");
       ack_log_handle.write(String.valueOf(ack_packet.getSeqNum()));
@@ -525,12 +527,14 @@ public class Sender {
       System.exit(-1); 
     }
 
+    // check if packet is ack type
     int index = 0;
-    System.out.println("type of packet is " + ack_packet.getType()); 
+    //System.out.println("type of packet is " + ack_packet.getType()); 
 
     if(ack_packet.getType() == 0) { //type is an ACK, as we expected
       System.out.println("Got ack with sequence: " + ack_packet.getSeqNum()); 
 
+      //go through buffer to see if and where ack packet is in buffer; if found, set found state
       for(int i = 0; i < not_acked_packets.size(); i++)
       {
         if(not_acked_packets.get(i).getSeqNum() == ack_packet.getSeqNum())
@@ -542,12 +546,13 @@ public class Sender {
         }
       }
 
+      //return if not found in list (ignore the ack)
       if(!found_in_list)
       {
-        System.out.println("ACK NOT IN WINDOW");
         return; //ignore duplicate or ack's that don't reflect our window packets
       }
 
+      //ack is found, update the base of our buffer and check if we need to restart the timer
       base = (ack_packet.getSeqNum() + 1) % SeqNumModulo; 
       waiter.stopTimerTask();
 
@@ -566,7 +571,9 @@ public class Sender {
         j++; 
       }
       
-    }
+    } //if
+    
+    // Check if packet is EOT type, then remove all other packets and set global state that eot is received
     else if(ack_packet.getType() == 2) // got EOT, means everything received. 
     {
       int j = 0; 
@@ -579,6 +586,11 @@ public class Sender {
     }    
   }
 
+  /* Function timerNeeded - function to check if we need to start the timer
+  Parameters: None
+
+  Return: boolean - true if timer is needed, false otherwise
+  */
   public static synchronized boolean timerNeeded() {
     
     if(base == next_seq_num)
@@ -589,6 +601,11 @@ public class Sender {
     return false; 
   }
 
+  /* Function windowNotFull - function to check if packet buffer is full
+  Parameters: None
+
+  Return: boolean - true if window is not full, false if it is full
+  */
   public static synchronized boolean windowNotFull() {
     if(not_acked_packets.size() < N)
     {
@@ -598,14 +615,29 @@ public class Sender {
     return false; 
   }
 
+  /* Function addToList - function to add packet to end of buffer
+  Parameters: packet orig_packet - packet to insert into list
+
+  Return: None
+  */
   public static synchronized void addToList(packet orig_packet) {
     not_acked_packets.addLast(orig_packet);
   }
 
+  /* Function setEotExpected - function to set global boolean state (expecting EOT packet)
+  Parameters: None
+
+  Return: None
+  */
   public static synchronized void setEotExpected() {
     expecting_EOT = true; 
   }
 
+  /* Function isEotExpected - function to evaluate value of expecting_EOT global state
+  Parameters: None
+
+  Return: boolean - true if expecting an EOT, false otherwise
+  */
   public static synchronized boolean isEotExpected() {
     return expecting_EOT;  
   }
