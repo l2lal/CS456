@@ -21,10 +21,11 @@ def Check_Inputs(args):
 		exit(1)
 
 	try:
-	    socket.inet_aton(str(args[1]))
+	    socket.inet_aton(args[1])
 	    # legal
 	except:
 	    print "Invalid IP"
+	    exit(1)
 
 	try:
 		arg3 = int(args[2])
