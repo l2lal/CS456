@@ -2,6 +2,7 @@ import sys
 import socket
 from socket import *
 import time
+import struct
 
 NBR_ROUTER = 5
 NUM_INPUTS = 4
@@ -93,7 +94,8 @@ def Send_Init(routerUDPSocket, packet, nse_host, nse_port):
 
 	#Listen for the request code
 	print "Sending INIT Packet..." 
-	routerUDPSocket.sendto(str(packet).encode(), (nse_host, nse_port))
+	buf = struct.pack('%si' % len(packet), *packet)
+	routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
 
 def Wait_Init(routerUDPSocket):
 	while True: 
