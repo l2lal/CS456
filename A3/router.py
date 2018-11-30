@@ -95,7 +95,7 @@ def Send_Init(routerUDPSocket, packet, nse_host, nse_port):
 	print "Sending INIT Packet..." 
 	routerUDPSocket.sendto(str(packet).encode(), (nse_host, nse_port))
 
-def Wait_Init():
+def Wait_Init(routerUDPSocket):
 	while True: 
 		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
 
@@ -143,7 +143,7 @@ def main():
 		Send_Init(routerUDPSocket, init_pkt, nse_host, nse_port)
 
 	#wait for a return packet
-	got_msg = Wait_Init()
+	got_msg = Wait_Init(routerUDPSocket)
 	if(got_msg == True):
 		print "Got a message back"
 	else:
