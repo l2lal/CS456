@@ -97,7 +97,7 @@ def Send_Init(routerUDPSocket, packet, nse_host, nse_port):
 
 def Wait_Init():
 	while True: 
-		receive_pkt, nseAddress = serverUDPSocket.recvfrom(1024)
+		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
 
 		if receive_pkt.decode().nbr_link <= str(NBR_ROUTER): # code isn't correct, keep listening
 			print "Invalid request code"
@@ -143,7 +143,11 @@ def main():
 		Send_Init(routerUDPSocket, init_pkt, nse_host, nse_port)
 
 	#wait for a return packet
-	Wait_Init()
+	got_msg = Wait_Init()
+	if(got_msg == True):
+		print "Got a message back"
+	else:
+		print "ohoh"
 
 	#while True:
 
