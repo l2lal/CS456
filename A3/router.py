@@ -134,13 +134,11 @@ def main():
 	timeout = time.time() + 60 * 5
 
 	#Create UDP Socket
-	routerUDPSocket, routerPort = Create_UDP(router_port)
+	routerUDPSocket1, routerPort = Create_UDP(router_port)a
 
-	#send 5 INIT packets to emulate 5 routers, need a way to make these LITTLE-ENDIAN
-	for x in range(5):
-		print "sending packet num = ", x 
-		init_pkt = pkt_INIT(router_id+x)
-		Send_Init(routerUDPSocket, init_pkt, nse_host, nse_port)
+	#send 5 INIT packets to emulate 5 routers, need a way to make these LITTLE-ENDIAN 
+	init_pkt = pkt_INIT(router_id)
+	Send_Init(routerUDPSocket, init_pkt, nse_host, nse_port)
 
 	#wait for a return packet
 	got_msg = Wait_Init(routerUDPSocket)
