@@ -89,7 +89,7 @@ def Send_Init(routerUDPSocket, packet, nse_host, nse_port):
 	print "Sending INIT Packet..." 
 	routerUDPSocket.sendto(str(packet).encode(), (nse_host, nse_port))
 
-def Wait_Init()
+def Wait_Init():
 	while True: 
 		receive_pkt nseAddress = serverUDPSocket.recvfrom(1024)
 
