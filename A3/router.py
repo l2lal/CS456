@@ -1,5 +1,6 @@
 import sys
-import socket
+from socket import *
+import time
 
 NBR_ROUTER = 5
 NUM_INPUTS = 4
