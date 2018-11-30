@@ -120,7 +120,7 @@ def Wait_Init(routerUDPSocket):
 	#origsize = struct.unpack('<%sI' % len(receive_pkt), receive_pkt)
 	origsize = struct.unpack('<44B', receive_pkt)
 	print "num links.. = ", origsize[0]
-	print "link 1, cost 1: ", origsize[1], origsize[2]
+	print "link 1, cost 1: ", origsize[4], origsize[8]
 	return False
 
 def main():
