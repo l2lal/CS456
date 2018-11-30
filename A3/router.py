@@ -72,7 +72,7 @@ class link_cost(object):
 class circuit_DB(object):
 	def __init__(self):
 		self.nbr_link = None
-		self.linkcost = None
+		self.linkcost[NBR_ROUTER] = link_cost()
 
 
 #Function Create_UDP - creates server UDP socket
@@ -116,7 +116,8 @@ def Wait_Init(routerUDPSocket):
 		# 		break
 
 	#serverUDPSocket.close()
-	print "linkcosts.. = ", receive_pkt
+	origsize = struct.unpack('<Q', struct.calcsize('Q'))[0]
+	print "linkcosts.. = ", origsize
 	return False
 
 def main():
