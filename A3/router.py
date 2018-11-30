@@ -94,7 +94,7 @@ def Send_Init(routerUDPSocket, packet, nse_host, nse_port):
 
 	#Listen for the request code
 	print "Sending INIT Packet..." 
-	buf = struct.pack('%si' % len(packet), *packet)
+	buf = struct.pack('I', *packet)
 	routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
 
 def Wait_Init(routerUDPSocket):
@@ -140,7 +140,7 @@ def main():
 
 	#send 5 INIT packets to emulate 5 routers, need a way to make these LITTLE-ENDIAN 
 	init_pkt = pkt_INIT(router_id)
-	print init_pkt.router_id
+	print len(init_pkt.router_id)
 	Send_Init(routerUDPSocket, init_pkt, nse_host, nse_port)
 
 	#wait for a return packet
