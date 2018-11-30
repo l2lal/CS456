@@ -116,7 +116,7 @@ def Wait_Init(routerUDPSocket):
 		# 		break
 
 	#serverUDPSocket.close()
-	origsize = struct.unpack('%sI' % len(receive_pkt), receive_pkt)
+	origsize = struct.unpack('%sI' % len(receive_pkt), *receive_pkt)
 	print "linkcosts.. = ", origsize
 	return False
 
