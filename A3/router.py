@@ -22,7 +22,7 @@ def Check_Inputs(args):
 	    socket.inet_aton(args[1])
 	    # legal
 	except socket.error:
-	    # Not legal
+	    print "Invalid IP"
 
 	try:
 		arg3 = int(args[2])
