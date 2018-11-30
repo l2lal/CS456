@@ -23,7 +23,7 @@ def Check_Inputs(args):
 	try:
 	    socket.inet_aton(str(args[1]))
 	    # legal
-	except socket.error as e:
+	except:
 	    print "Invalid IP"
 
 	try:
