@@ -22,7 +22,7 @@ def Check_Inputs(args):
 
 	try:
 		if isinstance(args[1], basestring):
-			socket.inet_aton(args[1])
+			socket.inet_aton(str(args[1])
 		else:
 			"Not a string"
 	    # legal
@@ -118,11 +118,11 @@ def Wait_Init():
 
 def main():
 	#validate inputs
-	Check_Inputs(sys.argv[1:])
 	print(sys.argv[1])
 	print(sys.argv[2])
 	print(sys.argv[3])
 	print(sys.argv[4])
+	Check_Inputs(sys.argv[1:])
 
 	
 	#assign inputs
