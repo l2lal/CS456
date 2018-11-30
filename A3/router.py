@@ -23,8 +23,8 @@ def Check_Inputs(args):
 	try:
 		if isinstance(args[1], basestring):
 			socket.inet_aton(str(args[1])
-		else:
-			print "Not a string"
+		#else:
+		#	print "Not a string"
 	    # legal
 	except:
 	    print "Invalid IP"
