@@ -115,6 +115,11 @@ def Wait_Init():
 def main():
 	#validate inputs
 	Check_Inputs(sys.argv[1:])
+	print(sys.argv[1])
+	print(sys.argv[2])
+	print(sys.argv[3])
+	print(sys.argv[4])
+
 	
 	#assign inputs
 	router_id = int(sys.argv[1])
