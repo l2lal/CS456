@@ -67,9 +67,6 @@ class circuit_DB(object):
 		self.nbr_link = None
 		self.linkcost = [ link_cost() for i in range(NBR_ROUTER)]
 
-class router(object):
-	def __init(self):
-
 
 #Function Create_UDP - creates server UDP socket
 #Parameters: 0
