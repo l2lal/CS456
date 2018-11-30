@@ -25,14 +25,14 @@ def Check_Inputs(args):
 	    # Not legal
 
 	try:
-		req_code = int(args[2])
+		arg3 = int(args[2])
 
 	except:
 		print "Improper formatting of argument", args
 		exit(1)
 
 	try:
-		req_code = int(args[3])
+		arg4 = int(args[3])
 
 	except:
 		print "Improper formatting of argument", args
@@ -128,7 +128,7 @@ def main():
 	#Create UDP Socket
 	routerUDPSocket, routerPort = Create_UDP(router_port)
 
-	#send 5 INIT packets to emulate 5 routers
+	#send 5 INIT packets to emulate 5 routers, need a way to make these LITTLE-ENDIAN
 	for x in range(5):
 		print "sending packet num = ", x 
 		init_pkt = pkt_INIT(router_id+x)
