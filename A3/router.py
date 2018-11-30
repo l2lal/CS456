@@ -134,7 +134,7 @@ def main():
 	timeout = time.time() + 60 * 5
 
 	#Create UDP Socket
-	routerUDPSocket1, routerPort = Create_UDP(router_port)
+	routerUDPSocket, routerPort = Create_UDP(router_port)
 
 	#send 5 INIT packets to emulate 5 routers, need a way to make these LITTLE-ENDIAN 
 	init_pkt = pkt_INIT(router_id)
