@@ -117,10 +117,10 @@ def main():
 	Check_Inputs(sys.argv[1:])
 	
 	#assign inputs
-	router_id = sys.argv[1]
-	nse_host = sys.argv[2]
-	nse_port = sys.argv[3]
-	router_port = sys.argv[4]
+	router_id = int(sys.argv[1])
+	nse_host = str(sys.argv[2])
+	nse_port = int(sys.argv[3])
+	router_port = int(sys.argv[4])
 
 	timeout = time.time() + 60 * 5
 
