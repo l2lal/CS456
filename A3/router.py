@@ -94,7 +94,7 @@ def Send_Init(routerUDPSocket, packet, nse_host, nse_port):
 
 	#Listen for the request code
 	print "Sending INIT Packet..." 
-	buf = struct.pack('I', packet.router_id)
+	buf = struct.pack('<I', packet.router_id)
 	routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
 
 def Wait_Init(routerUDPSocket):
@@ -116,7 +116,7 @@ def Wait_Init(routerUDPSocket):
 		# 		break
 
 	#serverUDPSocket.close()
-	origsize = struct.unpack('%sI' % len(receive_pkt), *receive_pkt)
+	origsize = struct.unpack('<%sI' % len(receive_pkt), receive_pkt)
 	print "linkcosts.. = ", origsize
 	return False
 
