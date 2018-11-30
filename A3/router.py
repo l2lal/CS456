@@ -54,7 +54,7 @@ class pkt_HELLO(object):
 
 class pkt_LSPDU(object):
 	def __init__(self):
-		self.sender
+		self.sender = None
 		self.router_id = None
 		self.link_id = None
 		self.cost = None
@@ -72,7 +72,7 @@ class link_cost(object):
 class circuit_DB(object):
 	def __init__(self):
 		self.nbr_link = None
-		self.linkcost = [ link_cost() for i in range(NBR_ROUTER)]
+		self.linkcost = None
 
 
 #Function Create_UDP - creates server UDP socket
@@ -94,29 +94,28 @@ def Send_Init(routerUDPSocket, packet, nse_host, nse_port):
 
 	#Listen for the request code
 	print "Sending INIT Packet..." 
-	buf = struct.pack('I', packet.router_id)
+	buf = struct.pack('I', packet.router_ida)
 	routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
 
 def Wait_Init(routerUDPSocket):
 	while True: 
 		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
 
-		if receive_pkt.decode().nbr_link <= str(NBR_ROUTER): # code isn't correct, keep listening
-			print "Invalid request code"
-			if time.time() > timeout:
-				print "Timed out waiting for request code"
-				got_msg = False
-				exit(1)
+		# if receive_pkt.decode().nbr_link <= str(NBR_ROUTER): # code isn't correct, keep listening
+		# 	print "Invalid request code"
+		# 	if time.time() > timeout:
+		# 		print "Timed out waiting for request code"
+		# 		got_msg = False
+		# 		exit(1)
 
-			else: #code is correct, let's do stuff
-				print "Something received"
-				got_msg = True
-				break
+		# 	else: #code is correct, let's do stuff
+		# 		print "Something received"
+		# 		got_msg = True
+		# 		break
 
 	#serverUDPSocket.close()
-	print "linkcosts.. = ", str(receive_pkt.decode().linkcost)
-
-	return got_msg
+	print "linkcosts.. = ", receive_pkt
+	return False
 
 def main():
 	#validate inputs
