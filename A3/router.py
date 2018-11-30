@@ -91,7 +91,7 @@ def Send_Init(routerUDPSocket, packet, nse_host, nse_port):
 
 def Wait_Init():
 	while True: 
-		receive_pkt nseAddress = serverUDPSocket.recvfrom(1024)
+		receive_pkt, nseAddress = serverUDPSocket.recvfrom(1024)
 
 		if receive_pkt.decode().nbr_link <= str(NBR_ROUTER): # code isn't correct, keep listening
 			print "Invalid request code"
