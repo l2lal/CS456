@@ -200,7 +200,7 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 	updated = False
 	count = 0
 
-	while count < 2:
+	while count < 5:
 		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
 
 		if(receive_pkt):
