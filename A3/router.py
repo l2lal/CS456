@@ -146,12 +146,12 @@ def Wait_Hello(routerUDPSocket, router):
 			via = packet[1]
 
 			#send a LSPDU back through this link
-			Send_LSPDU(routerUDPSocket, router, via)
+			Send_LSPDU(routerUDPSocket, router, via, nseAddress)
 
 			#add new neighbor to router's list for future communications
 			Add_Neighbor(router, new_router_id, via)
 
-def Send_LSPDU(routerUDPSocket, router, via):
+def Send_LSPDU(routerUDPSocket, router, via, nse_address):
 	sender = router.id
 	for i in range(len(router.LSDB)):
 		#for all router entries
@@ -164,7 +164,7 @@ def Send_LSPDU(routerUDPSocket, router, via):
 				linkcost = link_cost(link, cost)
 				packet = pkt_LSPDU(sender, router_id, link, cost, via)
 				buf = struct.pack('<5I', packet.sender, packet.router_id, packet.link_id, packet.cost, packet.via)
-				routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
+				routerUDPSocket.sendto(str(buf).encode(), nse_address)
 				print 'Sending a LS_PDU packet...'
 			else:
 				#router has no entries in this index of its LSDB
