@@ -228,11 +228,12 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 			# 		Send_LSPDU(routerUDPSocket, router, nse_host, nse_port , new_packet)
 			# 		router.forwarded.append([router_id, link_id])
 			# 		updated = True
-					count = 0
+			#		count = 0
+			count = 0
 
 		else:
 			count = count + 1
-			
+
 		Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port)
 
 
