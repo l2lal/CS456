@@ -162,7 +162,7 @@ def Wait_Hello(routerUDPSocket, router):
 
 def Send_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 	sender = router.id
-	for u in len(router.neighbor_list):
+	for u in range(len(router.neighbor_list)):
 		via = (router.neighbor_list[u])[1]
 		for i in range(NBR_ROUTER):
 			#for all router entries
