@@ -175,18 +175,6 @@ def Send_LSPDU(routerUDPSocket, router, via):
 			linkcost = link_cost(link, cost)
 			packet = pkt_LSPDU(sender, router_id, link, cost, via)
 
-
-
-
-
-	class pkt_LSPDU(object):
-	def __init__(self, sender, id, link, cost, via):
-		self.sender = sender
-		self.router_id = id
-		self.link_id = link
-		self.cost = cost
-		self.via = via
-
 def main():
 	#validate inputs
 	Check_Inputs(sys.argv[1:])
