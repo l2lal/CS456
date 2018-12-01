@@ -179,8 +179,8 @@ def Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 					linkcost = link_cost(link, cost)
 					packet = pkt_LSPDU(sender, router_id, link, cost, via)
 					Send_LSPDU(routerUDPSocket, router, nse_host, nse_port, packet)
-					print 'Sending a LS_PDU packet...', packet
-					router.testlist.append(packet)
+					print 'Sending a LS_PDU packet...'
+					router.testlist.append(packet[1],packet[2])
 				else:
 					#router has no entries in this index of its LSDB
 					continue
@@ -222,9 +222,9 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 			for u in range(len(router.neighbor_list)):
 				via = (router.neighbor_list[u])[1]
 				packet[4] = via
-				if packet not in router.forwarded:
+				if [packet[1],packet[2]] not in router.forwarded:
 					Send_LSPDU(routerUDPSocket, router, nse_host, nse_port , packet)
-					router.forwarded.append(packet)
+					router.forwarded.append([packet[1], packet[2]])
 
 			updated = True
 			count = 0
