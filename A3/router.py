@@ -132,8 +132,9 @@ def Wait_Init(routerUDPSocket, router):
 	for i in range(0,num_links):
 		link_ind = ind_count
 		cost_ind = ind_count + 4
+		print link_ind, cost_ind
 		router.LSDB[0].append([circuitDB[link_ind],circuitDB[cost_ind]])
-		ind_count = ind_count + 4
+		ind_count = ind_count + 8
 
 	#print "num links.. = ", origsize[0]
 	#print "link 1, cost 1: ", origsize[4], origsize[8]
