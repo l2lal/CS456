@@ -143,6 +143,7 @@ def Wait_Hello(routerUDPSocket, router):
 	while len(router.neighbor_list) != len(router.LSDB[router.id-1]) + 1: 
 		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
 		if(receive_pkt):
+			print "packet length is ", len(receive_pkt)
 			#disect packet and get where it came from
 			packet = struct.unpack('<II', receive_pkt)
 			incoming_router_id = packet[0]
