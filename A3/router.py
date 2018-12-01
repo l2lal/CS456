@@ -164,7 +164,7 @@ def Send_LSPDU(routerUDPSocket, router, nse_host, nse_port, packet):
 	buf = struct.pack('<5I', packet.sender, packet.router_id, packet.link_id, packet.cost, packet.via)
 	routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
 
-def Send__All_LSPDU(routerUDPSocket, router, nse_host, nse_port):
+def Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 	sender = router.id
 	for u in range(len(router.neighbor_list)):
 		via = (router.neighbor_list[u])[1]
