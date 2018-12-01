@@ -149,6 +149,7 @@ def Wait_Hello(routerUDPSocket, router):
 			Send_LSPDU(routerUDPSocket, router, via, nseAddress)
 
 			#add new neighbor to router's list for future communications
+			new_router_id = packet[0]
 			Add_Neighbor(router, new_router_id, via)
 
 def Send_LSPDU(routerUDPSocket, router, via, nse_address):
