@@ -112,34 +112,19 @@ def Wait_Init(routerUDPSocket, router):
 		if(receive_pkt):
 			break
 
-		# if receive_pkt.decode().nbr_link <= str(NBR_ROUTER): # code isn't correct, keep listening
-		# 	print "Invalid request code"
-		# 	if time.time() > timeout:
-		# 		print "Timed out waiting for request code"
-		# 		got_msg = False
-		# 		exit(1)
-
-		# 	else: #code is correct, let's do stuff
-		# 		print "Something received"
-		# 		got_msg = True
-		# 		break
-
 	#serverUDPSocket.close()
 	print (len(receive_pkt))
 	#origsize = struct.unpack('<%sI' % len(receive_pkt), receive_pkt)
 	circuitDB = struct.unpack('<11I', receive_pkt)
 	num_links = circuitDB[0]
-	print (circuitDB)
-	# ind_count = 4;
-	# for i in range(0,num_links):
-	# 	link_ind = ind_count
-	# 	cost_ind = ind_count + 4
-	# 	print link_ind, cost_ind
-	# 	router.LSDB[0].append([circuitDB[link_ind],circuitDB[cost_ind]])
-	# 	ind_count = ind_count + 8
+	ind_count = 4;
+	for i in range(0,num_links):
+		link_ind = ind_count
+		cost_ind = ind_count + 1
+		print link_ind, cost_ind
+		router.LSDB[0].append([circuitDB[link_ind],circuitDB[cost_ind]])
+		ind_count = ind_count + 2
 
-	#print "num links.. = ", origsize[0]
-	#print "link 1, cost 1: ", origsize[4], origsize[8]
 	#PYTHON HOW TO APPEND TO LIST - WE WANT TO CREATE A CIRCUIT_DB and return that! 
 	return router
 
