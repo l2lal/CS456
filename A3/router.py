@@ -128,8 +128,8 @@ def Wait_Init(routerUDPSocket, router):
 
 def Send_Hello(routerUDPSocket, nse_host, nse_port, router):
 	print "Sending HELLO Packet..."
-	for i in range(len(router.LSDB[0])):
-		link_id = ((router.LSDB[0])[i])[0] 
+	for i in range(len(router.LSDB[router.id])):
+		link_id = ((router.LSDB[router.id])[i])[0] 
 		#create packet
 		packet = pkt_HELLO(router.id,link_id)
 		buf = struct.pack('<II', packet.router_id, packet.link_id)
