@@ -146,6 +146,7 @@ def Wait_Hello(routerUDPSocket, router):
 		incoming_router_id = packet[0]
 		via = packet[1]
 
+		Print "Hello from " incoming_router_id
 		#send a LSPDU back through this link
 		Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nseAddress)
 
