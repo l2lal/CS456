@@ -203,9 +203,9 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 	while count < 6:
 		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
 
-		if(receive_packet):
-			if(len(receive_packet) != 20):
-				print "packet is not correct size...", len(receive_packet)
+		if(receive_pkt):
+			if(len(receive_pkt) != 20):
+				print "packet is not correct size...", len(receive_pkt)
 				continue
 
 		packet = struct.unpack('<5I', receive_pkt)
