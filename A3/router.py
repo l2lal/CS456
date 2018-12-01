@@ -80,7 +80,7 @@ class Router(object):
 		self.LSDB = defaultdict(list);
 		self.neighbors = 0
 		self.id = id
-		self.neighbor_list = [id]
+		self.neighbor_list = []
 
 
 #Function Create_UDP - creates server UDP socket
@@ -140,7 +140,7 @@ def Send_Hello(routerUDPSocket, nse_host, nse_port, router):
 
 def Wait_Hello(routerUDPSocket, router):
 	print "Waiting for Hellos..."
-	while len(router.neighbor_list) != len(router.LSDB[router.id-1]) + 1: 
+	while len(router.neighbor_list) != len(router.LSDB[router.id-1]): 
 		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
 		if(receive_pkt):
 			if(len(receive_pkt) != 8):
@@ -162,8 +162,8 @@ def Wait_Hello(routerUDPSocket, router):
 
 def Send_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 	sender = router.id
-	for u in len(neighbor_list):
-		via = (neighbor_list[u])[1]
+	for u in len(router.neighbor_list):
+		via = (router.neighbor_list[u])[1]
 		for i in range(NBR_ROUTER):
 			#for all router entries
 			router_id = i + 1 #indexing is from 0, so offset
@@ -228,6 +228,7 @@ def main():
 
 	#send a LSPDU back through this link
 	Send_LSPDU(routerUDPSocket, router, nse_host, nse_port)
+	print "Done sending PDUs"
 	#while True:
 
 	#pythontops.com/ python socket network programming
