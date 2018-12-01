@@ -176,6 +176,7 @@ def Add_Neighbor(router, new_router_id, via):
 	print "Adding Neighbor..."
 	neighbor_ind = new_router_id - 1 #shift to start from 0
 	router.LSDB[neighbor_ind].append([via,200])
+	print(router.LSDB)
 
 
 def main():
