@@ -154,7 +154,7 @@ def Wait_Hello(routerUDPSocket, router):
 
 def Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nse_address):
 	sender = router.id
-	for i in range(0,len(router.LSDB)):
+	for i in range(len(router.LSDB)):
 		#for all router entries
 		router_id = i + 1 #indexing is from 0, so offset
 		for j in range(len(router.LSDB[i])):
@@ -172,6 +172,7 @@ def Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nse_address):
 				continue
 
 def Add_Neighbor(router, new_router_id, via):
+	print "Adding Neighbor..."
 	neighbor_ind = new_router_id - 1 #shift to start from 0
 	router.LSDB[neighbor_ind].append([via,65535])
 
