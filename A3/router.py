@@ -155,7 +155,7 @@ def Wait_Hello(routerUDPSocket, router):
 
 			#send a LSPDU back through this link
 			Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nseAddress)
-	Print "Got everything, here's my neighbors: ", router.neighbor_list
+	print "Got everything, here's my neighbors: ", router.neighbor_list
 
 
 def Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nse_address):
