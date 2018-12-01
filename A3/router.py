@@ -219,18 +219,17 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 		if [router_id,link_id] not in router.LSDB[router_id - 1]:
 
 			router.LSDB[router_id - 1].append([router_id,link_id])
-			packet[0] = router.id
+			sender = router.id
 
 			for u in range(len(router.neighbor_list)):
 				via = (router.neighbor_list[u])[1]
 				packet[4] = via
 				if [packet[1],packet[2]] not in router.forwarded:
-					new_packet = pkt_LSPDU(packet[0],packet[1],packet[2],packet[3],packet[4])
-					Send_LSPDU(routerUDPSocket, router, nse_host, nse_port , packet)
-					router.forwarded.append([packet[1], packet[2]])
-
-			updated = True
-			count = 0
+					new_packet = pkt_LSPDU(sender, router_id, link_id, cost, via)
+					Send_LSPDU(routerUDPSocket, router, nse_host, nse_port , new_packet)
+					router.forwarded.append([router_id, link_id])
+					updated = True
+					count = 0
 
 		else:
 			count = count + 1
