@@ -200,7 +200,7 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 	updated = False
 	count = 0
 
-	while count < 6:
+	while count == 0:
 		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
 
 		if(receive_pkt):
@@ -275,6 +275,7 @@ def main():
 	print "Done sending PDUs"
 	#Update LSPDUs 
 	Update_and_Foward_LSPDU(routerUDPSocket,router,nse_host,nse_port)
+	print router.LSDB
 	#while True:
 
 	#pythontops.com/ python socket network programming
