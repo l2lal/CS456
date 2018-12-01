@@ -180,7 +180,7 @@ def Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 					packet = pkt_LSPDU(sender, router_id, link, cost, via)
 					Send_LSPDU(routerUDPSocket, router, nse_host, nse_port, packet)
 					print 'Sending a LS_PDU packet...'
-					router.testlist.append(packet.router_id,packet.link_id)
+					router.testlist.append([packet.router_id,packet.link_id])
 				else:
 					#router has no entries in this index of its LSDB
 					continue
