@@ -231,6 +231,7 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 				count = 0
 
 			else:
+				print [router_id, link_id], router.forwarded
 				count = count + 1
 
 	print "Fully updated our LSPDU"
