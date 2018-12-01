@@ -272,7 +272,7 @@ def main():
 	#sends a LSPDU back to its neighbors
 	Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port)
 	print "Done sending PDUs"
-	
+	print router.testlist
 	# Update LSPDUs 
 	#Update_and_Foward_LSPDU()
 	#while True:
