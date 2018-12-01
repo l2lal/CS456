@@ -145,13 +145,8 @@ def Send_Hello(routerUDPSocket, packet, nse_host, nse_port):
 
 def main():
 	#validate inputs
-	print(sys.argv[1])
-	print(sys.argv[2])
-	print(sys.argv[3])
-	print(sys.argv[4])
 	Check_Inputs(sys.argv[1:])
 
-	
 	#assign inputs
 	router_id = int(sys.argv[1])
 	nse_host = str(sys.argv[2])
@@ -171,10 +166,10 @@ def main():
 
 	#wait for a return packet
 	router = Wait_Init(routerUDPSocket,router)
-	if(got_msg == True):
-		print "Got a message back"
-	else:
+	if(router):
 		print router.LSDB
+	else:
+		print "fail"
 
 	#send Hello messages:
 
