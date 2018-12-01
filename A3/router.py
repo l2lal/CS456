@@ -54,12 +54,12 @@ class pkt_HELLO(object):
 		self.link_id = link
 
 class pkt_LSPDU(object):
-	def __init__(self):
-		self.sender = None
-		self.router_id = None
-		self.link_id = None
-		self.cost = None
-		self.via = None
+	def __init__(self, sender, router_id, link, cost, via):
+		self.sender = sender
+		self.router_id = router_id
+		self.link_id = link
+		self.cost = cost
+		self.via = via
 
 class pkt_INIT(object):
 	def __init__(self, id):
@@ -80,8 +80,6 @@ class Router(object):
 		self.LSDB = defaultdict(list);
 		self.neighbors = 0
 		self.id = id
-
-
 
 
 #Function Create_UDP - creates server UDP socket
@@ -144,9 +142,14 @@ def Wait_Hello(routerUDPSocket, router):
 		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
 		if(receive_pkt):
 			#disect packet and get where it came from
-			via = 0
-			Send_LSPDU(via)
+			packet = struct.unpack('<II', receive_pkt)
+			via = packet[1]
 
+			#send a LSPDU back through this link
+			Send_LSPDU(routerUDPSocket, router, via)
+
+			#add new neighbor to router's list for future communications
+			Add_Neighbor(router, new_router_id, via)
 
 def Send_LSPDU(routerUDPSocket, router, via):
 	sender = router.id
@@ -154,11 +157,23 @@ def Send_LSPDU(routerUDPSocket, router, via):
 		#for all router entries
 		router_id = router.LSDB[i] + 1 #indexing is from 0, so offset
 		for j in range(len(router.LSDB[i])):
-			#for all link_cost entries in the router
-			link = ((router.LSDB[i])[j])[0]
-			cost = ((router.LSDB[i])[j])[1]
-			linkcost = link_cost(link, cost)
-			packet = pkt_LSPDU(sender, router_id, link, cost, via)
+			if len((d[j])[0]) > 0:
+				#for all link_cost entries in the router
+				link = ((router.LSDB[i])[j])[0]
+				cost = ((router.LSDB[i])[j])[1]
+				linkcost = link_cost(link, cost)
+				packet = pkt_LSPDU(sender, router_id, link, cost, via)
+				buf = struct.pack('<5I', packet.sender, packet.router_id, packet.link, packet.cost, packet.via)
+				routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
+				print 'Sending a LS_PDU packet...'
+			else:
+				#router has no entries in this index of its LSDB
+				continue
+
+def Add_Neighbor(router, new_router_id, via):
+	neighbor_ind = new_router_id - 1 #shift to start from 0
+	router.LSDB[neighbor_ind].append([via,65535]])
+
 
 def main():
 	#validate inputs
@@ -189,9 +204,9 @@ def main():
 		print "fail"
 
 	#send Hello messages to neighbors:
-	#Send_Hello(routerUDPSocket, nse_host, nse_port, router)
+	Send_Hello(routerUDPSocket, nse_host, nse_port, router)
 
-	#Wait_Hello
+	Wait_Hello(routerUDPSocket, router)
 
 	#while True:
 
