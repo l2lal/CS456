@@ -3,6 +3,7 @@ import socket
 from socket import *
 import time
 import struct
+from collections import defaultdict
 
 NBR_ROUTER = 5
 NUM_INPUTS = 4
@@ -74,6 +75,13 @@ class circuit_DB(object):
 		self.nbr_link = None
 		self.linkcost[NBR_ROUTER] = link_cost()
 
+class Router(object):
+	def __init__(self):
+		self.LSDB = defaultdict(list);
+		self.neighbors = 0
+
+
+
 
 #Function Create_UDP - creates server UDP socket
 #Parameters: 0
@@ -97,7 +105,7 @@ def Send_Init(routerUDPSocket, packet, nse_host, nse_port):
 	buf = struct.pack('<I', packet.router_id)
 	routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
 
-def Wait_Init(routerUDPSocket):
+def Wait_Init(routerUDPSocket, router):
 	while True: 
 		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
 		if(receive_pkt):
@@ -118,10 +126,22 @@ def Wait_Init(routerUDPSocket):
 	#serverUDPSocket.close()
 	print (len(receive_pkt))
 	#origsize = struct.unpack('<%sI' % len(receive_pkt), receive_pkt)
-	origsize = struct.unpack('<44B', receive_pkt)
-	print "num links.. = ", origsize[0]
-	print "link 1, cost 1: ", origsize[4], origsize[8]
-	return False
+	circuitDB = struct.unpack('<44B', receive_pkt)
+	num_links = circuitDB[0]
+	for i in range(0,num_links):
+		link_ind = i + 4
+		cost_ind = link_ind + 4
+		router.LSDB[0].append([circuitDB[link_ind],circuitDB[cost_ind]])
+
+	#print "num links.. = ", origsize[0]
+	#print "link 1, cost 1: ", origsize[4], origsize[8]
+	#PYTHON HOW TO APPEND TO LIST - WE WANT TO CREATE A CIRCUIT_DB and return that! 
+	return router
+
+def Send_Hello(routerUDPSocket, packet, nse_host, nse_port):
+	print "Sending HELLO Packet..."
+	buf = struct.pack('<II', packet.router_id, packet.link_id)
+	routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
 
 def main():
 	#validate inputs
@@ -140,6 +160,8 @@ def main():
 
 	timeout = time.time() + 60 * 5
 
+	#create router:
+	router = Router(); 
 	#Create UDP Socket
 	routerUDPSocket, routerPort = Create_UDP(router_port)
 
@@ -148,11 +170,13 @@ def main():
 	Send_Init(routerUDPSocket, init_pkt, nse_host, nse_port)
 
 	#wait for a return packet
-	got_msg = Wait_Init(routerUDPSocket)
+	router = Wait_Init(routerUDPSocket,router)
 	if(got_msg == True):
 		print "Got a message back"
 	else:
-		print "ohoh"
+		print router.LSDB
+
+	#send Hello messages:
 
 	#while True:
 
