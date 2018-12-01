@@ -236,12 +236,13 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 			if [router_id,link_id] not in router.forwarded:
 				new_packet = pkt_LSPDU(sender, router_id, link_id, cost, via)
 				Send_LSPDU(routerUDPSocket, router, nse_host, nse_port , new_packet)
-				router.forwarded.append([router_id, link_id])
 				updated = True
 				count = 0
 				print [router_id, link_id], router.forwarded
 			#Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port)
 
+		if(updated):
+			router.forwarded.append([router_id, link_id])
 
 
 		#Run SPF Algorithm and put in RIB
