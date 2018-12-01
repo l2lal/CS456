@@ -172,7 +172,7 @@ def Send_LSPDU(routerUDPSocket, router, via):
 
 def Add_Neighbor(router, new_router_id, via):
 	neighbor_ind = new_router_id - 1 #shift to start from 0
-	router.LSDB[neighbor_ind].append([via,65535]])
+	router.LSDB[neighbor_ind].append([via,65535])
 
 
 def main():
