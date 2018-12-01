@@ -155,7 +155,7 @@ def Send_LSPDU(routerUDPSocket, router, via):
 	sender = router.id
 	for i in range(len(router.LSDB)):
 		#for all router entries
-		router_id = router.LSDB[i] + 1 #indexing is from 0, so offset
+		router_id = i + 1 #indexing is from 0, so offset
 		for j in range(len(router.LSDB[i])):
 			if len((d[j])[0]) > 0:
 				#for all link_cost entries in the router
