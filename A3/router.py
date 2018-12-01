@@ -49,9 +49,9 @@ def Check_Inputs(args):
 	return 
 
 class pkt_HELLO(object):
-	def __init__(self):
-		self.router_id = None
-		self.link_id = None
+	def __init__(self, id, link):
+		self.router_id = id
+		self.link_id = link
 
 class pkt_LSPDU(object):
 	def __init__(self):
@@ -66,9 +66,9 @@ class pkt_INIT(object):
 		self.router_id = id
 
 class link_cost(object):
-	def __init__(self):
-		self.link = None
-		self.cost = None
+	def __init__(self, link, cost):
+		self.link = link
+		self.cost = cost
 
 class circuit_DB(object):
 	def __init__(self):
@@ -76,9 +76,10 @@ class circuit_DB(object):
 		self.linkcost[NBR_ROUTER] = link_cost()
 
 class Router(object):
-	def __init__(self):
+	def __init__(self,id):
 		self.LSDB = defaultdict(list);
 		self.neighbors = 0
+		self.id = id
 
 
 
@@ -126,25 +127,65 @@ def Wait_Init(routerUDPSocket, router):
 	#serverUDPSocket.close()
 	print (len(receive_pkt))
 	#origsize = struct.unpack('<%sI' % len(receive_pkt), receive_pkt)
-	circuitDB = struct.unpack('<44B', receive_pkt)
+	circuitDB = struct.unpack('<11I', receive_pkt)
 	num_links = circuitDB[0]
-	ind_count = 4;
-	for i in range(0,num_links):
-		link_ind = ind_count
-		cost_ind = ind_count + 4
-		print link_ind, cost_ind
-		router.LSDB[0].append([circuitDB[link_ind],circuitDB[cost_ind]])
-		ind_count = ind_count + 8
+	print (circuitDB)
+	# ind_count = 4;
+	# for i in range(0,num_links):
+	# 	link_ind = ind_count
+	# 	cost_ind = ind_count + 4
+	# 	print link_ind, cost_ind
+	# 	router.LSDB[0].append([circuitDB[link_ind],circuitDB[cost_ind]])
+	# 	ind_count = ind_count + 8
 
 	#print "num links.. = ", origsize[0]
 	#print "link 1, cost 1: ", origsize[4], origsize[8]
 	#PYTHON HOW TO APPEND TO LIST - WE WANT TO CREATE A CIRCUIT_DB and return that! 
 	return router
 
-def Send_Hello(routerUDPSocket, packet, nse_host, nse_port):
+def Send_Hello(routerUDPSocket, nse_host, nse_port, router):
 	print "Sending HELLO Packet..."
-	buf = struct.pack('<II', packet.router_id, packet.link_id)
-	routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
+	for i in range(len(router.LSDB[0])):
+		link_id = ((LSDB[0])[i])[0] 
+		#create packet
+		packet = pkt_HELLO(router.id,link_id)
+		buf = struct.pack('<II', packet.router_id, packet.link_id)
+		routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
+	print "Finished first Hello"
+
+def Wait_Hello(routerUDPSocket, router):
+	print "Waiting for Hellos..."
+	while True: 
+		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
+		if(receive_pkt):
+			#disect packet and get where it came from
+			via = 0
+			Send_LSPDU(via)
+
+
+def Send_LSPDU(routerUDPSocket, router, via):
+	sender = router.id
+	for i in range(len(router.LSDB)):
+		#for all router entries
+		router_id = router.LSDB[i] + 1 #indexing is from 0, so offset
+		for j in range(len(router.LSDB[i])):
+			#for all link_cost entries in the router
+			link = ((router.LSDB[i])[j])[0]
+			cost = ((router.LSDB[i])[j])[1]
+			linkcost = link_cost(link, cost)
+			packet = pkt_LSPDU(sender, router_id, link, cost, via)
+
+
+
+
+
+	class pkt_LSPDU(object):
+	def __init__(self, sender, id, link, cost, via):
+		self.sender = sender
+		self.router_id = id
+		self.link_id = link
+		self.cost = cost
+		self.via = via
 
 def main():
 	#validate inputs
@@ -159,7 +200,7 @@ def main():
 	timeout = time.time() + 60 * 5
 
 	#create router:
-	router = Router(); 
+	router = Router(router_id); 
 	#Create UDP Socket
 	routerUDPSocket, routerPort = Create_UDP(router_port)
 
@@ -167,14 +208,17 @@ def main():
 	init_pkt = pkt_INIT(router_id)
 	Send_Init(routerUDPSocket, init_pkt, nse_host, nse_port)
 
-	#wait for a return packet
+	#wait for a circuit_DB
 	router = Wait_Init(routerUDPSocket,router)
 	if(router):
 		print router.LSDB
 	else:
 		print "fail"
 
-	#send Hello messages:
+	#send Hello messages to neighbors:
+	#Send_Hello(routerUDPSocket, nse_host, nse_port, router)
+
+	#Wait_Hello
 
 	#while True:
 
