@@ -140,7 +140,7 @@ def Send_Hello(routerUDPSocket, nse_host, nse_port, router):
 
 def Wait_Hello(routerUDPSocket, router):
 	print "Waiting for Hellos..."
-	while True: 
+	while len(router.neighbor_list) != len(router.LSDB[router.id-1]) + 1: 
 		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
 		if(receive_pkt):
 			#disect packet and get where it came from
@@ -155,6 +155,7 @@ def Wait_Hello(routerUDPSocket, router):
 
 			#send a LSPDU back through this link
 			Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nseAddress)
+	Print "Got everything, here's my neighbors: ", router.neighbor_list
 
 
 def Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nse_address):
