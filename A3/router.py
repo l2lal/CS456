@@ -163,7 +163,7 @@ def Send_LSPDU(routerUDPSocket, router, via):
 				cost = ((router.LSDB[i])[j])[1]
 				linkcost = link_cost(link, cost)
 				packet = pkt_LSPDU(sender, router_id, link, cost, via)
-				buf = struct.pack('<5I', packet.sender, packet.router_id, packet.link, packet.cost, packet.via)
+				buf = struct.pack('<5I', packet.sender, packet.router_id, packet.link_id, packet.cost, packet.via)
 				routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
 				print 'Sending a LS_PDU packet...'
 			else:
