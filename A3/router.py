@@ -120,7 +120,7 @@ def Wait_Init(routerUDPSocket, router):
 		link_ind = ind_count
 		cost_ind = ind_count + 1
 		print link_ind, cost_ind
-		router.LSDB[0].append([circuitDB[link_ind],circuitDB[cost_ind]])
+		router.LSDB[router.id].append([circuitDB[link_ind],circuitDB[cost_ind]])
 		ind_count = ind_count + 2
 
 	#PYTHON HOW TO APPEND TO LIST - WE WANT TO CREATE A CIRCUIT_DB and return that! 
@@ -143,18 +143,18 @@ def Wait_Hello(routerUDPSocket, router):
 		if(receive_pkt):
 			#disect packet and get where it came from
 			packet = struct.unpack('<II', receive_pkt)
+			incoming_router_id = packet[0]
 			via = packet[1]
 
 			#send a LSPDU back through this link
-			Send_LSPDU(routerUDPSocket, router, via, nseAddress)
+			Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nseAddress)
 
 			#add new neighbor to router's list for future communications
-			new_router_id = packet[0]
-			Add_Neighbor(router, new_router_id, via)
+			Add_Neighbor(router, incoming_router_id, via)
 
-def Send_LSPDU(routerUDPSocket, router, via, nse_address):
+def Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nse_address):
 	sender = router.id
-	for i in range(len(router.LSDB)):
+	for i in range(0,len(router.LSDB)):
 		#for all router entries
 		router_id = i + 1 #indexing is from 0, so offset
 		for j in range(len(router.LSDB[i])):
