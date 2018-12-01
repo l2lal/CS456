@@ -229,12 +229,14 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 			# 		router.forwarded.append([router_id, link_id])
 			# 		updated = True
 			#		count = 0
+			Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port)
 			count = 0
 
 		else:
 			count = count + 1
 
-		Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port)
+
+		#Run SPF Algorithm and put in RIB
 
 
 	print "Fully updated our LSPDU"
