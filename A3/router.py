@@ -216,9 +216,9 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 		cost = packet[3]
 		via = packet[4]
 
-		if [router_id,link_id] not in router.LSDB[router_id - 1]:
+		if [link_id,cost] not in router.LSDB[router_id - 1]:
 
-			router.LSDB[router_id - 1].append([router_id,link_id])
+			router.LSDB[router_id - 1].append([link_id,cost])
 			sender = router.id
 
 			for u in range(len(router.neighbor_list)):
