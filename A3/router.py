@@ -80,6 +80,7 @@ class Router(object):
 		self.LSDB = defaultdict(list);
 		self.neighbors = 0
 		self.id = id
+		self.neighbor_list = []
 
 
 #Function Create_UDP - creates server UDP socket
@@ -122,8 +123,9 @@ def Wait_Init(routerUDPSocket, router):
 		print link_ind, cost_ind
 		router.LSDB[router.id-1].append([circuitDB[link_ind],circuitDB[cost_ind]])
 		ind_count = ind_count + 2
+		router.neighbor_list.append[circuitDB[link_ind]]
 
-	#PYTHON HOW TO APPEND TO LIST - WE WANT TO CREATE A CIRCUIT_DB and return that! 
+	#PYTHON HOW TO APPEND TO LIST - WE WANT TO CREATE A CIRCUIT_DB and return that!
 	return router
 
 def Send_Hello(routerUDPSocket, nse_host, nse_port, router):
@@ -162,6 +164,10 @@ def Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nse_address):
 			if len((router.LSDB[i])[j]) > 0:
 				#for all link_cost entries in the router
 				link = ((router.LSDB[i])[j])[0]
+				if link not in router.neighbor_list:
+					#don't send through this link because it's not your friend
+					continue
+
 				cost = ((router.LSDB[i])[j])[1]
 				linkcost = link_cost(link, cost)
 				packet = pkt_LSPDU(sender, router_id, link, cost, via)
@@ -174,8 +180,12 @@ def Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nse_address):
 
 def Add_Neighbor(router, new_router_id, via):
 	print "Adding Neighbor..."
-	neighbor_ind = new_router_id - 1 #shift to start from 0
-	router.LSDB[neighbor_ind].append([via,200])
+	#neighbor_ind = new_router_id - 1 #shift to start from 0
+	#router.LSDB[neighbor_ind].append([via,200])
+	if via not in router.neighbor_list:
+		router.neighbor_list.append(via)
+
+	print(router.neighbor_list)
 	print(router.LSDB)
 
 
