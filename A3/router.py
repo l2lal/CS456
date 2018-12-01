@@ -215,15 +215,16 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 		cost = packet[3]
 		via = packet[4]
 
-		if [link_id,cost] not in router.LSDB[router_id - 1]:
+		if [router_id,link_id] not in router.LSDB[router_id - 1]:
 
-			router.LSDB[router_id - 1].append([link_ind,cost_ind])
+			router.LSDB[router_id - 1].append([router_id,link_id])
 			packet[0] = router.id
 
 			for u in range(len(router.neighbor_list)):
 				via = (router.neighbor_list[u])[1]
 				packet[4] = via
 				if [packet[1],packet[2]] not in router.forwarded:
+					new_packet = pkt_LSPDU(packet[0],packet[1],packet[2],packet[3],packet[4])
 					Send_LSPDU(routerUDPSocket, router, nse_host, nse_port , packet)
 					router.forwarded.append([packet[1], packet[2]])
 
@@ -273,9 +274,8 @@ def main():
 	#sends a LSPDU back to its neighbors
 	Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port)
 	print "Done sending PDUs"
-	print router.testlist
-	# Update LSPDUs 
-	#Update_and_Foward_LSPDU()
+	#Update LSPDUs 
+	Update_and_Foward_LSPDU(routerUDPSocket,router,nse_host,nse_port)
 	#while True:
 
 	#pythontops.com/ python socket network programming
