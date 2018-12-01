@@ -128,10 +128,12 @@ def Wait_Init(routerUDPSocket, router):
 	#origsize = struct.unpack('<%sI' % len(receive_pkt), receive_pkt)
 	circuitDB = struct.unpack('<44B', receive_pkt)
 	num_links = circuitDB[0]
+	ind_count = 4;
 	for i in range(0,num_links):
-		link_ind = (i + 1)*4
-		cost_ind = (i + 2)*4
+		link_ind = ind_count
+		cost_ind = ind_count + 4
 		router.LSDB[0].append([circuitDB[link_ind],circuitDB[cost_ind]])
+		ind_count = ind_count + 4
 
 	#print "num links.. = ", origsize[0]
 	#print "link 1, cost 1: ", origsize[4], origsize[8]
