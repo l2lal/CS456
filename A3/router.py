@@ -123,7 +123,7 @@ def Wait_Init(routerUDPSocket, router):
 		print link_ind, cost_ind
 		router.LSDB[router.id-1].append([circuitDB[link_ind],circuitDB[cost_ind]])
 		ind_count = ind_count + 2
-		router.neighbor_list.append[circuitDB[link_ind]]
+		#router.neighbor_list.append[circuitDB[link_ind]]
 
 	#PYTHON HOW TO APPEND TO LIST - WE WANT TO CREATE A CIRCUIT_DB and return that!
 	return router
