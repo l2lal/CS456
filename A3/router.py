@@ -138,26 +138,25 @@ def Send_Hello(routerUDPSocket, nse_host, nse_port, router):
 
 def Wait_Hello(routerUDPSocket, router):
 	print "Waiting for Hellos..."
-	#while True: 
-	receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
-	if(receive_pkt):
-		#disect packet and get where it came from
-		packet = struct.unpack('<II', receive_pkt)
-		incoming_router_id = packet[0]
-		via = packet[1]
+	while True: 
+		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
+		if(receive_pkt):
+			#disect packet and get where it came from
+			packet = struct.unpack('<II', receive_pkt)
+			incoming_router_id = packet[0]
+			via = packet[1]
 
-		print "Hello from ", incoming_router_id
-		#send a LSPDU back through this link
-		Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nseAddress)
+			print "Hello from ", incoming_router_id
+			#send a LSPDU back through this link
+			Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nseAddress)
 
-		#add new neighbor to router's list for future communications
-		Add_Neighbor(router, incoming_router_id, via)
+			#add new neighbor to router's list for future communications
+			Add_Neighbor(router, incoming_router_id, via)
 
 def Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nse_address):
 	sender = router.id
 	for i in range(NBR_ROUTER):
 		#for all router entries
-		print i
 		router_id = i + 1 #indexing is from 0, so offset
 		for j in range(len(router.LSDB[i])):
 			if len((router.LSDB[i])[j]) > 0:
