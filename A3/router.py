@@ -156,6 +156,7 @@ def Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nse_address):
 	sender = router.id
 	for i in range(len(router.LSDB)):
 		#for all router entries
+		print i
 		router_id = i + 1 #indexing is from 0, so offset
 		for j in range(len(router.LSDB[i])):
 			if len((router.LSDB[i])[j]) > 0:
@@ -174,7 +175,7 @@ def Send_LSPDU(routerUDPSocket, router, incoming_router_id, via, nse_address):
 def Add_Neighbor(router, new_router_id, via):
 	print "Adding Neighbor..."
 	neighbor_ind = new_router_id - 1 #shift to start from 0
-	router.LSDB[neighbor_ind].append([via,65535])
+	router.LSDB[neighbor_ind].append([via,200])
 
 
 def main():
