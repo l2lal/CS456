@@ -331,6 +331,10 @@ def Build_RIB(router):
 		elif (r_b-1 == router.id-1):
 			router.rib[rout] = [r_a, 'Local', 0]
 
+
+# def Run_Logger():
+# 	YOU"RE GONNA LOG STUFF HERE!!!!!
+
 def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 	updated = False
 	count = 0
@@ -375,6 +379,7 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 			Update_Graph(router)
 			router.graph = Graph(router.edges[0])
 			Build_RIB(router)
+			#Run_Logger()
 
 
 
@@ -419,6 +424,7 @@ def main():
 	print "Done sending PDUs"
 	#Update LSPDUs 
 	Update_and_Foward_LSPDU(routerUDPSocket,router,nse_host,nse_port)
+	Build_RIB(router)
 
 	#Update_Graph(router)
 	#router.graph = Graph(router.edges[0])
