@@ -301,7 +301,7 @@ def Update_Graph(router):
 					ind = (router.LSDB[k].index((router.LSDB[i])[j]))
 					b = k + 1
 					cost = ((router.LSDB[i])[j])[1]
-					if ([a,b,cost] not in router.edges[0]) and ([b,a,cost] not in router.edges[0]):
+					if ([a,b,cost] not in router.edges[0]): #and ([b,a,cost] not in router.edges[0]):
 						router.edges[0].append([a, b, cost])
 
 def Build_RIB(router):
@@ -330,10 +330,6 @@ def Build_RIB(router):
 
 		elif (r_b-1 == router.id-1):
 			router.rib[rout] = [r_a, 'Local', 0]
-
-
-# def Run_Logger():
-# 	YOU"RE GONNA LOG STUFF HERE!!!!!
 
 def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 	updated = False
@@ -379,7 +375,6 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 			Update_Graph(router)
 			router.graph = Graph(router.edges[0])
 			Build_RIB(router)
-			#Run_Logger()
 
 
 
@@ -424,7 +419,6 @@ def main():
 	print "Done sending PDUs"
 	#Update LSPDUs 
 	Update_and_Foward_LSPDU(routerUDPSocket,router,nse_host,nse_port)
-	Build_RIB(router)
 
 	#Update_Graph(router)
 	#router.graph = Graph(router.edges[0])
