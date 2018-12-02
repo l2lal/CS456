@@ -338,9 +338,17 @@ class Graph:
             path.appendleft(current_vertex)
         return path
 
-#def Build_Graph(router):
-
-
+def Update_Graph(router):
+	for i in range(len(router.LSDB)):
+		a = i + 1
+		for j in range(len(router.LSDB[i])):
+			for k in range(len(router.LSDB)):
+				if k != i && (router.LSDB[i])[j] in router.LSDB[k]:
+					#if you find a match
+					if (router.LSDB[i])[j] not in router.edges[0]:
+						b = k + 1
+						cost = ((router.LSDB[i])[j])[1]
+						router.edges[0].append([a, b, cost])
 
 def main():
 	#validate inputs
@@ -382,7 +390,12 @@ def main():
 	#Update LSPDUs 
 	Update_and_Foward_LSPDU(routerUDPSocket,router,nse_host,nse_port)
 	print router.LSDB
-	print router.LSDB[0].index([1,1])
+	Update_Graph(router)
+
+	print router.edges[0]
+	#graph = Graph(router.edges[0])
+
+
 
 
 	#while True:
