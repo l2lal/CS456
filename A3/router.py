@@ -366,7 +366,7 @@ def Build_RIB(router):
 						total_cost = total_cost + ((router.edges[0])[j])[2]
 						break
 
-			router.rib[rout] = [r_b, path[0], total_cost] #[dest, path, cost]
+			router.rib[rout] = [r_b, path[1], total_cost] #[dest, path, cost]
 
 		else:
 			router.rib[rout] = [r_a, 'Local', 0]
