@@ -410,7 +410,7 @@ def main():
 	#print router.edges[0]
 	router.graph = Graph(router.edges[0])
 
-	path = (router.graph.dijkstra(3, 1))
+	path = (router.graph.dijkstra(4, 2))
 
 	cost = Build_RIB(router, path)
 	print(cost)
