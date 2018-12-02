@@ -77,12 +77,12 @@ class circuit_DB(object):
 
 class Router(object):
 	def __init__(self,id):
-		self.LSDB = defaultdict(list);
-		self.neighbors = 0
+		self.LSDB = defaultdict(list)
 		self.id = id
 		self.neighbor_list = []
 		self.forwarded = []
-		self.testlist = []
+		self.rib = defaultdict(list)
+
 
 
 #Function Create_UDP - creates server UDP socket
@@ -238,14 +238,12 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 				Send_LSPDU(routerUDPSocket, router, nse_host, nse_port , new_packet)
 				updated = True
 				count = 0
-				print [router_id, link_id], router.forwarded
+				#print [router_id, link_id], router.forwarded
 			#Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port)
 
 		if(updated):
 			router.forwarded.append([router_id, link_id])
-
-
-		#Run SPF Algorithm and put in RIB
+			#Run SPF Algorithm and put in RIB
 
 
 	print "Fully updated our LSPDU"
@@ -282,7 +280,7 @@ def main():
 	#send Hello messages to neighbors:
 	Send_Hello(routerUDPSocket, nse_host, nse_port, router)
 
-	#Waits for hellos from neighbors
+	#Waits for hellos from neighbors - assignment specs doesn't say whether to send LSPDU responses to hellos right away
 	Wait_Hello(routerUDPSocket, router)
 
 	#sends a LSPDU back to its neighbors
