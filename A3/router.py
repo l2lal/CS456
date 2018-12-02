@@ -393,8 +393,10 @@ def main():
 	print router.LSDB
 	Update_Graph(router)
 
-	print router.edges[0]
-	#graph = Graph(router.edges[0])
+	#print router.edges[0]
+	graph = Graph(router.edges[0])
+	
+
 
 
 
