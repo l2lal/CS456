@@ -345,9 +345,10 @@ def Update_Graph(router):
 			for k in range(len(router.LSDB)):
 				if(k != i and ((router.LSDB[i])[j] in router.LSDB[k])):
 					#if you find a match
-					if (router.LSDB[i])[j] not in router.edges[0]:
-						b = k + 1
-						cost = ((router.LSDB[i])[j])[1]
+					ind = (router.LSDB[k].index((router.LSDB[i])[j]))
+					b = k + 1
+					cost = ((router.LSDB[i])[j])[1]
+					if [a,b,cost] not in router.edges[0] and (b,a,cost) not in router.edges[0]:
 						router.edges[0].append([a, b, cost])
 
 def main():
