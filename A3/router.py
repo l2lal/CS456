@@ -86,6 +86,7 @@ class Router(object):
 		self.rib[0] = ['Local', 0] #router, cost
 		self.spf_link = []
 		self.edges = defaultdict(list)
+		self.graph = none
 
 
 
@@ -351,6 +352,9 @@ def Update_Graph(router):
 					if ([a,b,cost] not in router.edges[0]) and ([b,a,cost] not in router.edges[0]):
 						router.edges[0].append([a, b, cost])
 
+def Build_RIB(router): 
+
+
 def main():
 	#validate inputs
 	Check_Inputs(sys.argv[1:])
@@ -394,9 +398,9 @@ def main():
 	Update_Graph(router)
 
 	#print router.edges[0]
-	graph = Graph(router.edges[0])
+	router.graph = Graph(router.edges[0])
 
-	print(graph.dijkstra(1, 4))
+	print(graph.dijkstra(3, 1))
 
 
 
