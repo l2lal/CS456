@@ -337,7 +337,7 @@ class Graph:
             current_vertex = previous_vertices[current_vertex]
         if path:
             path.appendleft(current_vertex)
-        return [path, 
+        return path
 
 def Update_Graph(router):
 	for i in range(len(router.LSDB)):
@@ -352,9 +352,7 @@ def Update_Graph(router):
 					if ([a,b,cost] not in router.edges[0]): #and ([b,a,cost] not in router.edges[0]):
 						router.edges[0].append([a, b, cost])
 
-# def Build_RIB(router): 
-# 	total_cost = 0
-# 	for i in range(len(router.))
+#def Build_RIB(router): 
 
 
 def main():
@@ -403,9 +401,8 @@ def main():
 	router.graph = Graph(router.edges[0])
 
 	path = (router.graph.dijkstra(3, 1))
-	print (path)
-	print (path[0])
-
+	print(path)
+	print(path[0])
 
 
 
