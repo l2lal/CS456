@@ -84,6 +84,7 @@ class Router(object):
 		self.forwarded = []
 		self.rib = defaultdict(list)
 		self.rib[0] = ['Local', 0] #router, cost
+		self.spf_link = []
 
 
 
@@ -336,6 +337,8 @@ class Graph:
             path.appendleft(current_vertex)
         return path
 
+#def Build_Graph(router):
+
 
 
 def main():
@@ -378,6 +381,7 @@ def main():
 	#Update LSPDUs 
 	Update_and_Foward_LSPDU(routerUDPSocket,router,nse_host,nse_port)
 	print router.LSDB
+	print router.LSDB.index([1,1])
 
 
 	#while True:
