@@ -352,7 +352,7 @@ def Update_Graph(router):
 					if ([a,b,cost] not in router.edges[0]) and ([b,a,cost] not in router.edges[0]):
 						router.edges[0].append([a, b, cost])
 
-def Build_RIB(router): 
+#def Build_RIB(router): 
 
 
 def main():
