@@ -395,7 +395,8 @@ def main():
 
 	#print router.edges[0]
 	graph = Graph(router.edges[0])
-	
+
+	print(graph.dijkstra(1, 4))
 
 
 
