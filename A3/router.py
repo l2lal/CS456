@@ -83,7 +83,6 @@ class Router(object):
 		self.neighbor_list = []
 		self.forwarded = []
 		self.rib = defaultdict(list)
-		self.rib[0] = ['Local', 0] #router, cost
 		self.spf_link = []
 		self.edges = defaultdict(list)
 		self.graph = None
@@ -352,18 +351,25 @@ def Update_Graph(router):
 					if ([a,b,cost] not in router.edges[0]): #and ([b,a,cost] not in router.edges[0]):
 						router.edges[0].append([a, b, cost])
 
-def Build_RIB(router, path):
-	total_cost = 0
-	for i in range(len(path)-1):
-		a = path[i]
-		b = path[i+1]
-		for j in range(len(router.edges[0])):
-			if (((router.edges[0])[j])[0] == a) and (((router.edges[0])[j])[1] == b):
-				total_cost = total_cost + ((router.edges[0])[j])[2]
-				break
-	return total_cost
+def Build_RIB(router):
+	r_a = router.id
+	for rout in range(NBR_ROUTER):
+		if(rout != router.id-1):
+			r_b = rout + 1
+			path = (router.graph.dijkstra(r_a, r_b))
+			total_cost = 0 
+			for i in range(len(path)-1):
+				a = path[i]
+				b = path[i+1]
+				for j in range(len(router.edges[0])):
+					if (((router.edges[0])[j])[0] == a) and (((router.edges[0])[j])[1] == b):
+						total_cost = total_cost + ((router.edges[0])[j])[2]
+						break
 
+			router.rib[rout] = [r_b, path[0], total_cost] #[dest, path, cost]
 
+		else:
+			router.rib[rout] = [r_a, 'Local', 0]
 
 def main():
 	#validate inputs
@@ -410,10 +416,10 @@ def main():
 	#print router.edges[0]
 	router.graph = Graph(router.edges[0])
 
-	path = (router.graph.dijkstra(4, 2))
+	#path = (router.graph.dijkstra(4, 2))
 
-	cost = Build_RIB(router, path)
-	print(cost)
+	Build_RIB(router, path)
+	print(router.rib)
 
 
 
