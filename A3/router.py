@@ -411,17 +411,11 @@ def main():
 	#print router.LSDB
 
 	Update_Graph(router)
-
-	#print router.edges[0]
 	router.graph = Graph(router.edges[0])
-
-	#path = (router.graph.dijkstra(4, 2))
-
 	Build_RIB(router)
 	print(router.rib)
 
-
-
+	#path = (router.graph.dijkstra(4, 2))
 
 
 	#while True:
