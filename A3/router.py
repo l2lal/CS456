@@ -418,7 +418,7 @@ def main():
 
 	#path = (router.graph.dijkstra(4, 2))
 
-	Build_RIB(router, path)
+	Build_RIB(router)
 	print(router.rib)
 
 
