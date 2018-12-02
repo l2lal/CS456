@@ -352,7 +352,17 @@ def Update_Graph(router):
 					if ([a,b,cost] not in router.edges[0]): #and ([b,a,cost] not in router.edges[0]):
 						router.edges[0].append([a, b, cost])
 
-#def Build_RIB(router): 
+def Build_RIB(router, path):
+	total_cost = 0
+	for i in range(len(path)-1):
+		a = path[i]
+		b = path[i+1]
+		for j in range(len(router.edges[0])):
+			if (((router.edges[0])[j])[0] == a) and (((router.edges[0])[j])[1] == b):
+				total_cost = total_cost + ((router.edges[0])[j])[2]
+				break
+	return total_cost
+
 
 
 def main():
@@ -401,8 +411,10 @@ def main():
 	router.graph = Graph(router.edges[0])
 
 	path = (router.graph.dijkstra(3, 1))
-	print(path)
-	print(path[0])
+
+	cost = Build_RIB(router, path)
+	print(cost)
+
 
 
 
