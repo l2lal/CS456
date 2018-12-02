@@ -301,7 +301,7 @@ def Update_Graph(router):
 					ind = (router.LSDB[k].index((router.LSDB[i])[j]))
 					b = k + 1
 					cost = ((router.LSDB[i])[j])[1]
-					if ([a,b,cost] not in router.edges[0]): #and ([b,a,cost] not in router.edges[0]):
+					if ([a,b,cost] not in router.edges[0]) and ([b,a,cost] not in router.edges[0]):
 						router.edges[0].append([a, b, cost])
 
 def Build_RIB(router):
