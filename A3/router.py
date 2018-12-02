@@ -343,7 +343,7 @@ def Update_Graph(router):
 		a = i + 1
 		for j in range(len(router.LSDB[i])):
 			for k in range(len(router.LSDB)):
-				if k != i && (router.LSDB[i])[j] in router.LSDB[k]:
+				if(k != i and ((router.LSDB[i])[j] in router.LSDB[k])):
 					#if you find a match
 					if (router.LSDB[i])[j] not in router.edges[0]:
 						b = k + 1
