@@ -86,7 +86,7 @@ class Router(object):
 		self.rib[0] = ['Local', 0] #router, cost
 		self.spf_link = []
 		self.edges = defaultdict(list)
-		self.graph = none
+		self.graph = None
 
 
 
@@ -400,7 +400,7 @@ def main():
 	#print router.edges[0]
 	router.graph = Graph(router.edges[0])
 
-	print(graph.dijkstra(3, 1))
+	print(router.graph.dijkstra(3, 1))
 
 
 
