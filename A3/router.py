@@ -307,7 +307,14 @@ def Update_Graph(router):
 def Build_RIB(router):
 	r_a = router.id
 	for rout in range(NBR_ROUTER):
-		if(rout != router.id-1):
+		r_b = rout + 1
+		in_edges = False
+
+		for edge_ind in range(len(router.edges[0])):
+			if (((router.edges[0])[edge_ind])[0] == r_a) and (((router.edges[0])[j])[1] == r_b):
+				in_edges = True
+
+		if(r_b-1 != router.id-1) and in_edges:
 			r_b = rout + 1
 			path = (router.graph.dijkstra(r_a, r_b))
 			total_cost = 0 
@@ -321,7 +328,7 @@ def Build_RIB(router):
 
 			router.rib[rout] = [r_b, path[1], total_cost] #[dest, path, cost]
 
-		else:
+		elif (r_b-1 == router.id-1):
 			router.rib[rout] = [r_a, 'Local', 0]
 
 def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
