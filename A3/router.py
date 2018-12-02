@@ -311,7 +311,7 @@ def Build_RIB(router):
 		in_edges = False
 
 		for edge_ind in range(len(router.edges[0])):
-			if (((router.edges[0])[edge_ind])[0] == r_a) and (((router.edges[0])[j])[1] == r_b):
+			if (((router.edges[0])[edge_ind])[0] == r_a) and (((router.edges[0])[edge_ind])[1] == r_b):
 				in_edges = True
 
 		if(r_b-1 != router.id-1) and in_edges:
