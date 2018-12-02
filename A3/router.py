@@ -85,6 +85,7 @@ class Router(object):
 		self.rib = defaultdict(list)
 		self.rib[0] = ['Local', 0] #router, cost
 		self.spf_link = []
+		self.edges = defaultdict(list)
 
 
 
@@ -381,7 +382,7 @@ def main():
 	#Update LSPDUs 
 	Update_and_Foward_LSPDU(routerUDPSocket,router,nse_host,nse_port)
 	print router.LSDB
-	print router.LSDB.index([1,1])
+	print router.LSDB[0].index([1,1])
 
 
 	#while True:
