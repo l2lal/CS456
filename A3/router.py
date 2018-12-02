@@ -307,14 +307,7 @@ def Update_Graph(router):
 def Build_RIB(router):
 	r_a = router.id
 	for rout in range(NBR_ROUTER):
-		r_b = rout + 1
-		in_edges = False
-
-		for edge_ind in range(len(router.edges[0])):
-			if (((router.edges[0])[edge_ind])[0] == r_a) and (((router.edges[0])[edge_ind])[1] == r_b):
-				in_edges = True
-
-		if(r_b-1 != router.id-1) and in_edges:
+		if(rout != router.id-1):
 			r_b = rout + 1
 			path = (router.graph.dijkstra(r_a, r_b))
 			total_cost = 0 
@@ -328,7 +321,7 @@ def Build_RIB(router):
 
 			router.rib[rout] = [r_b, path[1], total_cost] #[dest, path, cost]
 
-		elif (r_b-1 == router.id-1):
+		else:
 			router.rib[rout] = [r_a, 'Local', 0]
 
 def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
@@ -372,10 +365,6 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 		if(updated):
 			router.forwarded.append([router_id, link_id])
 			#Run SPF Algorithm and put in RIB
-			Update_Graph(router)
-			router.graph = Graph(router.edges[0])
-			Build_RIB(router)
-
 
 
 	print "Fully updated our LSPDU"
@@ -419,13 +408,21 @@ def main():
 	print "Done sending PDUs"
 	#Update LSPDUs 
 	Update_and_Foward_LSPDU(routerUDPSocket,router,nse_host,nse_port)
+	#print router.LSDB
 
-	#Update_Graph(router)
-	#router.graph = Graph(router.edges[0])
-	#Build_RIB(router)
+	Update_Graph(router)
+
+	#print router.edges[0]
+	router.graph = Graph(router.edges[0])
+
 	#path = (router.graph.dijkstra(4, 2))
 
+	Build_RIB(router)
 	print(router.rib)
+
+
+
+
 
 	#while True:
 
