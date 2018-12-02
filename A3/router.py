@@ -205,53 +205,6 @@ def Check_Full(router):
 			return False
 	return True
 
-def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
-	updated = False
-	count = 0
-
-	while Check_Full(router) != True:
-		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
-
-		if(receive_pkt):
-			if(len(receive_pkt) != 20):
-				print "packet is not correct size...", len(receive_pkt)
-				continue
-
-		packet = struct.unpack('<5I', receive_pkt)
-
-		sender = packet[0]
-		router_id = packet[1]
-		link_id = packet[2]
-		cost = packet[3]
-		via = packet[4]
-
-		if [link_id,cost] not in router.LSDB[router_id - 1]:
-
-			router.LSDB[router_id - 1].append([link_id,cost])
-			sender = router.id
-
-		else:
-			count = count + 1
-		
-		for u in range(len(router.neighbor_list)):
-			via = (router.neighbor_list[u])[1]
-			if [router_id,link_id] not in router.forwarded:
-				new_packet = pkt_LSPDU(sender, router_id, link_id, cost, via)
-				Send_LSPDU(routerUDPSocket, router, nse_host, nse_port , new_packet)
-				updated = True
-				count = 0
-				#print [router_id, link_id], router.forwarded
-			#Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port)
-
-		if(updated):
-			router.forwarded.append([router_id, link_id])
-			#Run SPF Algorithm and put in RIB
-
-
-	print "Fully updated our LSPDU"
-
-
-
 # we'll use infinity as a default distance to nodes.
 inf = float('inf')
 Edge = namedtuple('Edge', 'start, end, cost')
@@ -371,6 +324,55 @@ def Build_RIB(router):
 		else:
 			router.rib[rout] = [r_a, 'Local', 0]
 
+def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
+	updated = False
+	count = 0
+
+	while Check_Full(router) != True:
+		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
+
+		if(receive_pkt):
+			if(len(receive_pkt) != 20):
+				print "packet is not correct size...", len(receive_pkt)
+				continue
+
+		packet = struct.unpack('<5I', receive_pkt)
+
+		sender = packet[0]
+		router_id = packet[1]
+		link_id = packet[2]
+		cost = packet[3]
+		via = packet[4]
+
+		if [link_id,cost] not in router.LSDB[router_id - 1]:
+
+			router.LSDB[router_id - 1].append([link_id,cost])
+			sender = router.id
+
+		else:
+			count = count + 1
+		
+		for u in range(len(router.neighbor_list)):
+			via = (router.neighbor_list[u])[1]
+			if [router_id,link_id] not in router.forwarded:
+				new_packet = pkt_LSPDU(sender, router_id, link_id, cost, via)
+				Send_LSPDU(routerUDPSocket, router, nse_host, nse_port , new_packet)
+				updated = True
+				count = 0
+				#print [router_id, link_id], router.forwarded
+			#Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port)
+
+		if(updated):
+			router.forwarded.append([router_id, link_id])
+			#Run SPF Algorithm and put in RIB
+			Update_Graph(router)
+			router.graph = Graph(router.edges[0])
+			Build_RIB(router)
+
+
+
+	print "Fully updated our LSPDU"
+
 def main():
 	#validate inputs
 	Check_Inputs(sys.argv[1:])
@@ -410,20 +412,13 @@ def main():
 	print "Done sending PDUs"
 	#Update LSPDUs 
 	Update_and_Foward_LSPDU(routerUDPSocket,router,nse_host,nse_port)
-	print router.LSDB
-	Update_Graph(router)
 
-	#print router.edges[0]
-	router.graph = Graph(router.edges[0])
-
+	#Update_Graph(router)
+	#router.graph = Graph(router.edges[0])
+	#Build_RIB(router)
 	#path = (router.graph.dijkstra(4, 2))
 
-	Build_RIB(router)
 	print(router.rib)
-
-
-
-
 
 	#while True:
 
