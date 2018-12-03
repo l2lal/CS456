@@ -350,7 +350,7 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 		link_id = packet[2]
 		cost = packet[3]
 		via = packet[4]
-		logging.info('R' + str(router.id) + " receives a LSPDU: sender" + str(sender) + " router_id" + str(router_id) + " link_id " + str(link_id) + " cost " + str(cost) + " via " + str(via))
+		logging.info('R' + str(router.id) + " receives a LSPDU: sender" + str(sender) + " router_id " + str(router_id) + " link_id " + str(link_id) + " cost " + str(cost) + " via " + str(via))
 
 		if [link_id,cost] not in router.LSDB[router_id - 1]:
 
