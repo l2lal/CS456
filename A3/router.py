@@ -390,7 +390,7 @@ def Build_RIB(router):
 		if(rout != router.id-1):
 			r_b = rout + 1
 			# Check if source node, r_a exists
-			if len(router.LSDB[rout]) > 0 and len(router.LSDB[r_a-1]) > 0:
+			if (len(router.LSDB[rout]) > 0) and (len(router.LSDB[r_a-1]) > 0) and (len(router.edges[0]) > 0):
 				print(router.LSDB)
 				print(router.edges[0])
 				print("Dijkstra: passing in ", r_a, " and ", r_b)
