@@ -511,10 +511,8 @@ def main():
 
 	#wait for a circuit_DB from NSE
 	router = Wait_Init(routerUDPSocket,router)
-	if(router):
-		print router.LSDB
-	else:
-		print "fail"
+	if(!router):
+		print "failed waiting for inits"
 		exit(1)
 
 	#send Hello messages to neighbors:
