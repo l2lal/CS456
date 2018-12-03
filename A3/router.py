@@ -114,8 +114,8 @@ def Create_UDP(port):
 def Send_Init(routerUDPSocket, packet, nse_host, nse_port, router):
 	#Set timeout value to ensure no system hanging; Creating timeout value of 1 minute
 	#timeout = time.time() + 60
-
 	#Listen for the request code
+	print "Sending INIT..."
 	buf = struct.pack('<I', packet.router_id)
 	routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
 	logging.info('R' + str(router.id) + " sends an INIT: router_id " + str(packet.router_id))
@@ -525,7 +525,7 @@ def main():
 
 	#sends a LSPDU back to all neighbors, since I know I've gotten hellos from them
 	Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port)
-	print "Done sending PDUs"
+	#print "Done sending PDUs"
 
 	#Update LSPDUs 
 	Update_and_Foward_LSPDU(routerUDPSocket,router,nse_host,nse_port)
@@ -541,6 +541,8 @@ def main():
 	Print_LSDB(router)
 	Print_RIB(router)
 	logging.info("------- END OSPF -------")
+
+	print "Finished"
 
 	#pythontops.com/ python socket network programming
 	#https://dev.to/mxl/dijkstras-algorithm-in-python-algorithms-for-beginners-dkc
