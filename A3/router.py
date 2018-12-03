@@ -401,6 +401,7 @@ def Build_RIB(router):
 			if (len(router.LSDB[rout]) > 0) and (len(router.LSDB[r_a-1]) > 0) and (len(router.edges[0]) > 0) and (source_in_edges) and (dest_in_edges):
 				#print("Dijkstra: passing in ", r_a, " and ", r_b)
 				path = (router.graph.dijkstra(r_a, r_b))
+				print(path)
 				total_cost = 0 
 				for i in range(len(path)-1):
 					a = path[i]
