@@ -381,7 +381,7 @@ def main():
 	#setup log file
 	filename = "router(" + str(router_id) + ").log"
 	logging.basicConfig(filename=filename, level=logging.INFO)
-	lggging.info('Starting routing protocol for router' + str(router_id))
+	logging.info('Starting routing protocol for router' + str(router_id))
 
 
 	timeout = time.time() + 60 * 5
