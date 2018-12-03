@@ -88,6 +88,7 @@ class Router(object):
 		self.spf_link = []
 		self.edges = defaultdict(list)
 		self.graph = None
+		self.nbr_link = None
 
 
 
@@ -111,7 +112,7 @@ def Send_Init(routerUDPSocket, packet, nse_host, nse_port, router):
 	#Listen for the request code
 	buf = struct.pack('<I', packet.router_id)
 	routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
-	logging.info('R' + str(router.id) + " sends an INIT: router_id" + str(packet.router_id))
+	logging.info('R' + str(router.id) + " sends an INIT: router_id " + str(packet.router_id))
 
 
 def Wait_Init(routerUDPSocket, router):
@@ -125,6 +126,7 @@ def Wait_Init(routerUDPSocket, router):
 	#origsize = struct.unpack('<%sI' % len(receive_pkt), receive_pkt)
 	circuitDB = struct.unpack('<11I', receive_pkt)
 	num_links = circuitDB[0]
+	router.nbr_link = num_links
 	logging.info('R' + str(router.id) + " receives a CIRCUIT_DB: nbr_link " + str(num_links))
 
 	ind_count = 1;
@@ -147,7 +149,7 @@ def Send_Hello(routerUDPSocket, nse_host, nse_port, router):
 		packet = pkt_HELLO(router.id,link_id)
 		buf = struct.pack('<II', packet.router_id, packet.link_id)
 		routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
-		logging.info('R' + str(router.id) + " sends a HELLO: router_id" + str(packet.router_id) + " link_id" + str(packet.link_id))
+		logging.info('R' + str(router.id) + " sends a HELLO: router_id " + str(packet.router_id) + " link_id " + str(packet.link_id))
 
 
 def Wait_Hello(routerUDPSocket, router):
@@ -377,7 +379,19 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 			#Run SPF Algorithm and put in RIB
 
 
-	print "Fully updated our LSPDU"
+	#print "Fully updated our LSPDU"
+
+def Print_LSDB(router):
+	logging.info("------- # Topology Database -------")
+	for i in range(len(router.LSDB)):
+		for j in range(len(router.LSDB[i])):
+			if j == 0:
+				logging.info("R" + str(router.id) + " -> R" + str(j+1) + " nbr link " + str(len(router.LSDB[i])))
+
+			link = ((router.LSDB[i])[j])[0]
+			cost = ((router.LSDB[i])[j])[1]
+			logging.info("R" + str(router.id) + " -> R" + str(j+1) + " link " + str(link) + " cost " + str(cost))
+
 
 def main():
 	#validate inputs
@@ -396,7 +410,7 @@ def main():
 	except OSError:
 		pass
 	logging.basicConfig(filename=filename, level=logging.INFO)
-	logging.info('Starting routing protocol for router' + str(router_id))
+	logging.info('Starting routing protocol for router ' + str(router_id))
 
 
 	timeout = time.time() + 60 * 5
@@ -433,6 +447,7 @@ def main():
 	Update_Graph(router)
 	router.graph = Graph(router.edges[0])
 	Build_RIB(router)
+	Print_LSDB(router)
 	print(router.rib)
 
 	#path = (router.graph.dijkstra(4, 2))
