@@ -392,7 +392,7 @@ def Build_RIB(router):
 
 			router.rib[rout] = [r_b, path[1], total_cost] #[dest, first hop, cost]
 
-		elif(rout+1 == router.id:
+		elif(rout+1 == router.id):
 			router.rib[rout] = [r_a, 'Local', 0]
 
 
