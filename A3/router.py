@@ -11,6 +11,10 @@ import os
 NBR_ROUTER = 5
 NUM_INPUTS = 4
 
+#Function Check_Inputs - validates the inputs
+#Parameters: 2
+#	$1: all the arguments passed in from the terminal
+#Return: None
 def Check_Inputs(args):
 	
 
@@ -24,16 +28,6 @@ def Check_Inputs(args):
 	except:
 		print "Improper formatting of argument", args
 		exit(1)
-
-	#try:
-		#if (isinstance(args[1], basestring) == True):
-		#	socket.inet_aton(args[1])
-		#else:
-		#	print "Not a string"
-	    # legal
-	#except:
-	 #   print "Invalid IP"
-	  #  exit(1)
 
 	try:
 		arg3 = int(args[2])
@@ -51,11 +45,13 @@ def Check_Inputs(args):
 
 	return 
 
+#Hello Packet
 class pkt_HELLO(object):
 	def __init__(self, id, link):
 		self.router_id = id
 		self.link_id = link
 
+#LSPDU Packet
 class pkt_LSPDU(object):
 	def __init__(self, sender, router_id, link, cost, via):
 		self.sender = sender
@@ -64,20 +60,24 @@ class pkt_LSPDU(object):
 		self.cost = cost
 		self.via = via
 
+#INIT Packet
 class pkt_INIT(object):
 	def __init__(self, id):
 		self.router_id = id
 
+#link_cost structure
 class link_cost(object):
 	def __init__(self, link, cost):
 		self.link = link
 		self.cost = cost
 
+#circuit_db structure
 class circuit_DB(object):
 	def __init__(self):
 		self.nbr_link = None
 		self.linkcost[NBR_ROUTER] = link_cost()
 
+#Router Class
 class Router(object):
 	def __init__(self,id):
 		self.LSDB = defaultdict(list)
@@ -85,18 +85,15 @@ class Router(object):
 		self.neighbor_list = []
 		self.forwarded = []
 		self.rib = defaultdict(list)
-		self.spf_link = []
 		self.edges = defaultdict(list)
 		self.graph = None
 		self.nbr_link = None
 
-
-
-#Function Create_UDP - creates server UDP socket
-#Parameters: 0
-#Return:
-#	$1: <serverUDPSocket> handle to UDP Socket
-#	$2: <neg_port> UDP port
+#Function Create_UDP - creates router UDP socket
+#Parameters: port to bind to
+#Return: 2
+#	$1: Handle to the router UDP socket
+#	$2: router port
 def Create_UDP(port):
 	#Create server UDP Socket and listen to the negotiate port
 	routerUDPSocket = socket(AF_INET, SOCK_DGRAM)
@@ -105,6 +102,15 @@ def Create_UDP(port):
 
 	return (routerUDPSocket, routerPort)
 
+
+#Function Send_Init - Sends INIT Packet to NSE
+#Parameters: 5
+#	$1: <routerUDPSocket> is the handle to a UDP Socket
+#	$2: <packet> init packet to send
+#   $3: <nse_host> host name of nse
+#   $4: <nse_port> port of nse
+#   $5: <router> router handle
+#Return: None
 def Send_Init(routerUDPSocket, packet, nse_host, nse_port, router):
 	#Set timeout value to ensure no system hanging; Creating timeout value of 1 minute
 	#timeout = time.time() + 60
@@ -115,6 +121,13 @@ def Send_Init(routerUDPSocket, packet, nse_host, nse_port, router):
 	logging.info('R' + str(router.id) + " sends an INIT: router_id " + str(packet.router_id))
 
 
+#Function Wait_Init - wait for circuit_db from nse
+#Parameters: 2
+#	$1: <routerUDPSocket> is the handle to a UDP Socket
+#	$2: <router> handle to the router
+
+#Return: 1
+#   $1: <router> handle to the router to verify we received information
 def Wait_Init(routerUDPSocket, router):
 	while True: 
 		receive_pkt, nseAddress = routerUDPSocket.recvfrom(1024)
@@ -141,6 +154,13 @@ def Wait_Init(routerUDPSocket, router):
 	#PYTHON HOW TO APPEND TO LIST - WE WANT TO CREATE A CIRCUIT_DB and return that!
 	return router
 
+#Function Send_Hello - Sends HELLO Packet to neighbors
+#Parameters: 4
+#	$1: <routerUDPSocket> is the handle to a UDP Socket
+#   $2: <nse_host> host name of nse
+#   $3: <nse_port> port of nse
+#   $4: <router> router handle
+#Return: None
 def Send_Hello(routerUDPSocket, nse_host, nse_port, router):
 	#print "Sending HELLO Packet..."
 	for i in range(len(router.LSDB[router.id-1])):
@@ -151,7 +171,11 @@ def Send_Hello(routerUDPSocket, nse_host, nse_port, router):
 		routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
 		logging.info('R' + str(router.id) + " sends a HELLO: router_id " + str(packet.router_id) + " link_id " + str(packet.link_id))
 
-
+#Function Wait_Hello - Waits for return hellos from all neighbors in circuit_db
+#Parameters: 2
+#	$1: <routerUDPSocket> is the handle to a UDP Socket
+#   $2: <router> router handle
+#Return: None
 def Wait_Hello(routerUDPSocket, router):
 	print "Waiting for Hellos..."
 	while len(router.neighbor_list) != len(router.LSDB[router.id-1]): 
@@ -173,10 +197,26 @@ def Wait_Hello(routerUDPSocket, router):
 
 	print "Got everything, here's my neighbors: ", router.neighbor_list
 
+
+#Function Send_LSPDU - Sends an LSPDU packet
+#Parameters: 5
+#	$1: <routerUDPSocket> is the handle to a UDP Socket
+#	$2: <router> router handle
+#   $3: <nse_host> host name of nse
+#   $4: <nse_port> port of nse
+#   $5: <packet> LSPDU packet to send
+#Return: None
 def Send_LSPDU(routerUDPSocket, router, nse_host, nse_port, packet):
 	buf = struct.pack('<5I', packet.sender, packet.router_id, packet.link_id, packet.cost, packet.via)
 	routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
 
+#Function Send_ALL_LSPDU - Sends an LSPDU packet to all neighbors
+#Parameters: 4
+#	$1: <routerUDPSocket> is the handle to a UDP Socket
+#	$2: <router> router handle
+#   $3: <nse_host> host name of nse
+#   $4: <nse_port> port of nse
+#Return: None
 def Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 	sender = router.id
 	for u in range(len(router.neighbor_list)):
@@ -198,6 +238,12 @@ def Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 					#router has no entries in this index of its LSDB
 					continue
 
+#Function Add_Neighbor - adds neighbor to router's safe sender list
+#Parameters: 3
+#	$1: <router> router handle
+#	$2: <new_router_id> id of new router
+#   $3: <via> link id used with this neighbor
+#Return: None
 def Add_Neighbor(router, new_router_id, via):
 	print "Adding Neighbor..."
 	#neighbor_ind = new_router_id - 1 #shift to start from 0
@@ -208,6 +254,10 @@ def Add_Neighbor(router, new_router_id, via):
 	print(router.neighbor_list)
 	#print(router.LSDB)
 
+#Function Check_Full - Checks if the router's LSPDU is complete
+#Parameters: 1
+#   $1: <router> router handle
+#Return: Boolean - true if full, false otherwise
 def Check_Full(router):
 	num_vals = [2,3,3,2,4]
 	for i in range(len(router.LSDB)):
@@ -215,6 +265,8 @@ def Check_Full(router):
 			return False
 	return True
 
+# --------------------- DIJKSTRAS ALGORITHM - SOURCED FROM 	#https://dev.to/mxl/dijkstras-algorithm-in-python-algorithms-for-beginners-dkc
+# DIDNT WANT TO REINVENT THE WHEEL HERE, SORRY. 
 # we'll use infinity as a default distance to nodes.
 inf = float('inf')
 Edge = namedtuple('Edge', 'start, end, cost')
@@ -300,7 +352,12 @@ class Graph:
         if path:
             path.appendleft(current_vertex)
         return path
+# -------END DIJKSTRAS ALGORITHM AND FUNCTIONS ---------------------
 
+#Function Update_Graph - uses the updated LSPDU to generate a graph represented the cost between routers
+#Parameters: 1
+#	$1: <router> router handle
+#Return: None
 def Update_Graph(router):
 	for i in range(len(router.LSDB)):
 		a = i + 1
@@ -314,6 +371,10 @@ def Update_Graph(router):
 					if ([a,b,cost] not in router.edges[0]): #and ([b,a,cost] not in router.edges[0]):
 						router.edges[0].append([a, b, cost])
 
+#Function Build_RIB - Builds an RIB by running dijkstra's algorithm on the router's graph member
+#Parameters: 1
+#	$1: <router> router handle
+#Return: None
 def Build_RIB(router):
 	r_a = router.id
 	for rout in range(NBR_ROUTER):
@@ -329,11 +390,18 @@ def Build_RIB(router):
 						total_cost = total_cost + ((router.edges[0])[j])[2]
 						break
 
-			router.rib[rout] = [r_b, path[1], total_cost] #[dest, path, cost]
+			router.rib[rout] = [r_b, path[1], total_cost] #[dest, first hop, cost]
 
 		else:
 			router.rib[rout] = [r_a, 'Local', 0]
 
+#Function Update_and_Forward_LSPDU - blocking call, continuously updates LSPDU and forwards packets until router LSPDU is full 
+#Parameters: 4
+#	$1: <routerUDPSocket> is the handle to a UDP Socket
+#	$2: <router> router handle
+#   $3: <nse_host> host name of nse
+#   $4: <nse_port> port of nse
+#Return: None
 def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 	updated = False
 	count = 0
@@ -382,6 +450,10 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 
 	#print "Fully updated our LSPDU"
 
+#Function Print_LSDB - prints updated LSDB in log file
+#Parameters: 1
+#	$1: <router> router handle
+#Return: None
 def Print_LSDB(router):
 	logging.info("------- # START Topology Database -------")
 	for i in range(len(router.LSDB)):
@@ -394,6 +466,10 @@ def Print_LSDB(router):
 			logging.info("R" + str(router.id) + " -> R" + str(i+1) + " link " + str(link) + " cost " + str(cost))
 	logging.info("------- # END Topology Database -------")
 
+#Function Print_RIB - prints updated RIB in log file
+#Parameters: 1
+#	$1: <router> router handle
+#Return: None
 def Print_RIB(router):
 	logging.info("------- # START RIB -------")
 	for i in range(len(router.rib)):
@@ -403,18 +479,18 @@ def Print_RIB(router):
 		logging.info("R" + str(router.id) + " -> " + str(dest) + " -> " + str(first_hop) + ", " + str(tot_cost))
 	logging.info("------- # END RIB -------")	
 
-
+#MAIN FUNCTION
 def main():
 	#validate inputs
 	Check_Inputs(sys.argv[1:])
 
-	#assign inputs
+	#assign inputs to variables for later on
 	router_id = int(sys.argv[1])
 	nse_host = str(sys.argv[2])
 	nse_port = int(sys.argv[3])
 	router_port = int(sys.argv[4])
 
-	#setup log file
+	#setup log file, removing existing one if necsesary
 	filename = "router" + str(router_id) + ".log"
 	try:
 		os.remove(filename)
@@ -423,49 +499,48 @@ def main():
 	logging.basicConfig(filename=filename, level=logging.INFO)
 	logging.info('Starting routing protocol for router ' + str(router_id))
 
-
-	timeout = time.time() + 60 * 5
-
 	#create router:
-	router = Router(router_id); 
+	router = Router(router_id);
+
 	#Create UDP Socket
 	routerUDPSocket, routerPort = Create_UDP(router_port)
 
-	#send 5 INIT packets to emulate 5 routers, need a way to make these LITTLE-ENDIAN 
+	#creates and sends an init packet to NSE 
 	init_pkt = pkt_INIT(router_id)
 	Send_Init(routerUDPSocket, init_pkt, nse_host, nse_port, router)
 
-	#wait for a circuit_DB
+	#wait for a circuit_DB from NSE
 	router = Wait_Init(routerUDPSocket,router)
 	if(router):
 		print router.LSDB
 	else:
 		print "fail"
+		exit(1)
 
 	#send Hello messages to neighbors:
 	Send_Hello(routerUDPSocket, nse_host, nse_port, router)
 
-	#Waits for hellos from neighbors - assignment specs doesn't say whether to send LSPDU responses to hellos right away
+	#Waits for hellos from neighbors - assignment specs doesn't say whether to send LSPDU responses to hellos right away, so I wait for all neighbors to say hello
 	Wait_Hello(routerUDPSocket, router)
 
-	#sends a LSPDU back to its neighbors
+	#sends a LSPDU back to all neighbors, since I know I've gotten hellos from them
 	Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port)
 	print "Done sending PDUs"
+
 	#Update LSPDUs 
 	Update_and_Foward_LSPDU(routerUDPSocket,router,nse_host,nse_port)
 	#print router.LSDB
 
+	#Build a graph out of LSDB and from there use sourced DIJKSTRAS algorithm to build an RIB
 	Update_Graph(router)
 	router.graph = Graph(router.edges[0])
 	Build_RIB(router)
-	#Print_LSDB(router)
+
+	#Final prints
+	logging.info("------- Final Prints -------")
+	Print_LSDB(router)
 	Print_RIB(router)
-	
-
-	#path = (router.graph.dijkstra(4, 2))
-
-
-	#while True:
+	logging.info("------- END OSPF -------")
 
 	#pythontops.com/ python socket network programming
 	#https://dev.to/mxl/dijkstras-algorithm-in-python-algorithms-for-beginners-dkc
