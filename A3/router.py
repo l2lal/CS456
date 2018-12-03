@@ -135,7 +135,7 @@ def Wait_Init(routerUDPSocket, router):
 			break
 
 	#serverUDPSocket.close()
-	print (len(receive_pkt))
+	#print (len(receive_pkt))
 	#origsize = struct.unpack('<%sI' % len(receive_pkt), receive_pkt)
 	circuitDB = struct.unpack('<11I', receive_pkt)
 	num_links = circuitDB[0]
@@ -146,7 +146,7 @@ def Wait_Init(routerUDPSocket, router):
 	for i in range(0,num_links):
 		link_ind = ind_count
 		cost_ind = ind_count + 1
-		print link_ind, cost_ind
+		#print link_ind, cost_ind
 		router.LSDB[router.id-1].append([circuitDB[link_ind],circuitDB[cost_ind]])
 		ind_count = ind_count + 2
 		#router.neighbor_list.append[circuitDB[link_ind]]
@@ -195,7 +195,7 @@ def Wait_Hello(routerUDPSocket, router):
 			#add new neighbor to router's list for future communications
 			Add_Neighbor(router, incoming_router_id, via)
 
-	print "Got everything, here's my neighbors: ", router.neighbor_list
+	#print "Got everything, here's my neighbors: ", router.neighbor_list
 
 
 #Function Send_LSPDU - Sends an LSPDU packet
@@ -245,13 +245,13 @@ def Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 #   $3: <via> link id used with this neighbor
 #Return: None
 def Add_Neighbor(router, new_router_id, via):
-	print "Adding Neighbor..."
+	#print "Adding Neighbor..."
 	#neighbor_ind = new_router_id - 1 #shift to start from 0
 	#router.LSDB[neighbor_ind].append([via,200])
 	if [new_router_id,via] not in router.neighbor_list:
 		router.neighbor_list.append([new_router_id,via])
 
-	print(router.neighbor_list)
+	#print(router.neighbor_list)
 	#print(router.LSDB)
 
 #Function Check_Full - Checks if the router's LSPDU is complete
@@ -545,4 +545,5 @@ def main():
 	#pythontops.com/ python socket network programming
 	#https://dev.to/mxl/dijkstras-algorithm-in-python-algorithms-for-beginners-dkc
 
+# Calling function
 main()
