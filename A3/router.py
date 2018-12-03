@@ -394,6 +394,15 @@ def Print_LSDB(router):
 			logging.info("R" + str(router.id) + " -> R" + str(i+1) + " link " + str(link) + " cost " + str(cost))
 	logging.info("------- # END Topology Database -------")
 
+def Print_RIB(router):
+	logging.info("------- # START RIB -------")
+	for i in range(len(router.rib)):
+		dest = ((router.rib[i])[0])
+		first_hop = ((router.rib[i])[1])
+		tot_cost = ((router.rib[i])[2])
+		logging.info("R" + str(router.id) + " -> " + str(dest) + " -> " + str(first_hop) + ", " + str(tot_cost))
+	logging.info("------- # END RIB -------")	
+
 
 def main():
 	#validate inputs
@@ -449,8 +458,9 @@ def main():
 	Update_Graph(router)
 	router.graph = Graph(router.edges[0])
 	Build_RIB(router)
-	Print_LSDB(router)
-	print(router.rib)
+	#Print_LSDB(router)
+	Print_RIB(router)
+	
 
 	#path = (router.graph.dijkstra(4, 2))
 
