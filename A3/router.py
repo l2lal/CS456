@@ -208,8 +208,8 @@ def Wait_Hello(routerUDPSocket, router):
 					if(((router.LSDB[val])[link_ind])[0] == via):
 						cost = ((router.LSDB[val])[link_ind])[1]
 						if ([router.id, incoming_router_id, cost] not in router.edges[0]) and ([incoming_router_id, router.id, cost] not in router.edges[0]):
-							router.edges[0].append(router.id, incoming_router_id, cost)
-							router.edges[0].append(incoming_router_id, router.id, cost)
+							router.edges[0].append([router.id, incoming_router_id, cost])
+							router.edges[0].append([incoming_router_id, router.id, cost])
 
 	#print "Got everything, here's my neighbors: ", router.neighbor_list
 
