@@ -89,13 +89,8 @@ class Router(object):
 		self.graph = None
 		self.nbr_link = None
 
-#Function Create_UDP - creates router UDP socket
-#Parameters: port to bind to
-#Return: 2
-#	$1: Handle to the router UDP socket
-#	$2: router port
 def Init_RIB(router):
-	for rout in range(len(NBR_ROUTER)):
+	for rout in range(NBR_ROUTER):
 		if(rout != router.id - 1):
 			router.rib[rout] = ["N/A", "N/A", "INF"]
 
@@ -103,6 +98,11 @@ def Init_RIB(router):
 			router.rib[rout] = [router.id, 'Local', 0]
 
 
+#Function Create_UDP - creates router UDP socket
+#Parameters: port to bind to
+#Return: 2
+#	$1: Handle to the router UDP socket
+#	$2: router port
 def Create_UDP(port):
 	#Create server UDP Socket and listen to the negotiate port
 	routerUDPSocket = socket(AF_INET, SOCK_DGRAM)
