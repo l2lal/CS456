@@ -190,7 +190,7 @@ def Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 					linkcost = link_cost(link, cost)
 					packet = pkt_LSPDU(sender, router_id, link, cost, via)
 					Send_LSPDU(routerUDPSocket, router, nse_host, nse_port, packet)
-					logging.info('R' + str(router.id) + " sends a LSPDU: sender" + str(sender) + " router_id" + str(router_id) + " link_id " + str(link) + " cost " + str(cost) + " via " + str(via))
+					logging.info('R' + str(router.id) + " sends a LSPDU: sender" + str(sender) + " router_id " + str(router_id) + " link_id " + str(link) + " cost " + str(cost) + " via " + str(via))
 					#print 'Sending a LS_PDU packet...'
 				else:
 					#router has no entries in this index of its LSDB
