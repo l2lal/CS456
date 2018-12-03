@@ -162,7 +162,7 @@ def Wait_Hello(routerUDPSocket, router):
 			incoming_router_id = packet[0]
 			via = packet[1]
 
-			logging.info('R' + str(router_id) + " receives a HELLO: router_id" + str(incoming_router_id) + " link_id" + str(via))
+			logging.info('R' + str(router.id) + " receives a HELLO: router_id" + str(incoming_router_id) + " link_id" + str(via))
 			#print "Hello from ", incoming_router_id
 
 			#add new neighbor to router's list for future communications
