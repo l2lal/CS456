@@ -110,7 +110,7 @@ def Send_Init(routerUDPSocket, packet, nse_host, nse_port, router):
 	#Listen for the request code
 	buf = struct.pack('<I', packet.router_id)
 	routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
-	logging.info('R' + str(router.id) + " sends an INIT: router_id" + str(router_id))
+	logging.info('R' + str(router.id) + " sends an INIT: router_id" + str(packet.router_id))
 
 
 def Wait_Init(routerUDPSocket, router):
