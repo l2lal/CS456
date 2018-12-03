@@ -211,6 +211,12 @@ def Wait_Hello(routerUDPSocket, router):
 		# 		if ([incoming_router_id, router.id, cost] not in router.edges[0]):
 		# 			router.edges[0].append([incoming_router_id, router.id, cost])
 
+		Update_Graph(router)
+		router.graph = Graph(router.edges[0])
+	#Build_RIB(router)
+	#Print_RIB(router)
+	#Print_LSDB(router)
+
 	#print "Got everything, here's my neighbors: ", router.neighbor_list
 
 
@@ -253,12 +259,6 @@ def Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 				else:
 					#router has no entries in this index of its LSDB
 					continue
-	
-	Update_Graph(router)
-	router.graph = Graph(router.edges[0])
-	Build_RIB(router)
-	Print_RIB(router)
-	Print_LSDB(router)
 
 #Function Add_Neighbor - adds neighbor to router's safe sender list
 #Parameters: 3
