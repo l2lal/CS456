@@ -108,9 +108,10 @@ def Send_Init(routerUDPSocket, packet, nse_host, nse_port):
 	#timeout = time.time() + 60
 
 	#Listen for the request code
-	print "Sending INIT Packet..." 
 	buf = struct.pack('<I', packet.router_id)
 	routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
+	logging.info('R' + str(router.id) + " sends an INIT: router_id" + str(router_id))
+
 
 def Wait_Init(routerUDPSocket, router):
 	while True: 
@@ -123,6 +124,8 @@ def Wait_Init(routerUDPSocket, router):
 	#origsize = struct.unpack('<%sI' % len(receive_pkt), receive_pkt)
 	circuitDB = struct.unpack('<11I', receive_pkt)
 	num_links = circuitDB[0]
+	logging.info('R' + str(router.id) + " receives a CIRCUIT_DB: nbr_link " + str(num_links))
+
 	ind_count = 1;
 	for i in range(0,num_links):
 		link_ind = ind_count
@@ -136,14 +139,15 @@ def Wait_Init(routerUDPSocket, router):
 	return router
 
 def Send_Hello(routerUDPSocket, nse_host, nse_port, router):
-	print "Sending HELLO Packet..."
+	#print "Sending HELLO Packet..."
 	for i in range(len(router.LSDB[router.id-1])):
 		link_id = ((router.LSDB[router.id-1])[i])[0] 
 		#create packet
 		packet = pkt_HELLO(router.id,link_id)
 		buf = struct.pack('<II', packet.router_id, packet.link_id)
 		routerUDPSocket.sendto(str(buf).encode(), (nse_host, nse_port))
-	print "Finished first Hello"
+		logging.info('R' + str(router.id) + " sends a HELLO: router_id" + str(packet.router_id) + " link_id" + str(packet.link_id))
+
 
 def Wait_Hello(routerUDPSocket, router):
 	print "Waiting for Hellos..."
@@ -158,7 +162,8 @@ def Wait_Hello(routerUDPSocket, router):
 			incoming_router_id = packet[0]
 			via = packet[1]
 
-			print "Hello from ", incoming_router_id
+			logging.info('R' + str(router_id) + " receives a HELLO: router_id" + str(incoming_router_id) + " link_id" + str(via))
+			#print "Hello from ", incoming_router_id
 
 			#add new neighbor to router's list for future communications
 			Add_Neighbor(router, incoming_router_id, via)
@@ -184,7 +189,8 @@ def Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 					linkcost = link_cost(link, cost)
 					packet = pkt_LSPDU(sender, router_id, link, cost, via)
 					Send_LSPDU(routerUDPSocket, router, nse_host, nse_port, packet)
-					print 'Sending a LS_PDU packet...'
+					logging.info('R' + str(router.id) + " sends a LSPDU: sender" + str(sender) + " router_id" + str(router_id) + " link_id " + str(link) + " cost " + str(cost) + " via " + str(via))
+					#print 'Sending a LS_PDU packet...'
 				else:
 					#router has no entries in this index of its LSDB
 					continue
@@ -344,6 +350,7 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 		link_id = packet[2]
 		cost = packet[3]
 		via = packet[4]
+		logging.info('R' + str(router.id) + " receives a LSPDU: sender" + str(sender) + " router_id" + str(router_id) + " link_id " + str(link_id) + " cost " + str(cost) + " via " + str(via))
 
 		if [link_id,cost] not in router.LSDB[router_id - 1]:
 
@@ -358,6 +365,7 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 			if [router_id,link_id] not in router.forwarded:
 				new_packet = pkt_LSPDU(sender, router_id, link_id, cost, via)
 				Send_LSPDU(routerUDPSocket, router, nse_host, nse_port , new_packet)
+				logging.info('R' + str(router.id) + " sends a LSPDU: sender" + str(sender) + " router_id" + str(router_id) + " link_id " + str(link_id) + " cost " + str(cost) + " via " + str(via))
 				updated = True
 				count = 0
 				#print [router_id, link_id], router.forwarded
@@ -381,7 +389,7 @@ def main():
 	router_port = int(sys.argv[4])
 
 	#setup log file
-	filename = "router(" + str(router_id) + ").log"
+	filename = "router" + str(router_id) + ".log"
 	logging.basicConfig(filename=filename, level=logging.INFO)
 	logging.info('Starting routing protocol for router' + str(router_id))
 
