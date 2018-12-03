@@ -386,11 +386,11 @@ def Print_LSDB(router):
 	for i in range(len(router.LSDB)):
 		for j in range(len(router.LSDB[i])):
 			if j == 0:
-				logging.info("R" + str(router.id) + " -> R" + str(j+1) + " nbr link " + str(len(router.LSDB[i])))
+				logging.info("R" + str(router.id) + " -> R" + str(i+1) + " nbr link " + str(len(router.LSDB[i])))
 
 			link = ((router.LSDB[i])[j])[0]
 			cost = ((router.LSDB[i])[j])[1]
-			logging.info("R" + str(router.id) + " -> R" + str(j+1) + " link " + str(link) + " cost " + str(cost))
+			logging.info("R" + str(router.id) + " -> R" + str(i+1) + " link " + str(link) + " cost " + str(cost))
 
 
 def main():
