@@ -92,7 +92,7 @@ class Router(object):
 def Init_RIB(router):
 	for rout in range(NBR_ROUTER):
 		if(rout != router.id - 1):
-			router.rib[rout] = ["N/A", "N/A", "INF"]
+			router.rib[rout] = [str(rout+1), "N/A", "INF"]
 
 		elif(rout+1 == router.id):
 			router.rib[rout] = [router.id, 'Local', 0]
@@ -391,12 +391,13 @@ def Build_RIB(router):
 		if(rout != router.id-1):
 			r_b = rout + 1
 			# Check if source node, r_a exists
+			print(router.LSDB)
+			print(router.edges[0])
 			for check in range(len(router.edges[0])):
 				if r_a == ((router.edges[0])[check])[0]:
 					source_in_edges = True
-			if (len(router.LSDB[rout]) > 0) and (len(router.LSDB[r_a-1]) > 0) and (r_a in router.edges[0] > 0) and (source_in_edges):
-				print(router.LSDB)
-				print(router.edges[0])
+					print ("source is in edges!")
+			if (len(router.LSDB[rout]) > 0) and (len(router.LSDB[r_a-1]) > 0) and (len(router.edges[0]) > 0) and (source_in_edges):
 				print("Dijkstra: passing in ", r_a, " and ", r_b)
 				path = (router.graph.dijkstra(r_a, r_b))
 				total_cost = 0 
