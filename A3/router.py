@@ -94,6 +94,15 @@ class Router(object):
 #Return: 2
 #	$1: Handle to the router UDP socket
 #	$2: router port
+def Init_RIB(router):
+	for rout in range(len(NBR_ROUTER)):
+		if(rout != router.id - 1):
+			router.rib[rout] = ["N/A", "N/A", "INF"]
+
+		elif(rout+1 == router.id):
+			router.rib[rout] = [router.id, 'Local', 0]
+
+
 def Create_UDP(port):
 	#Create server UDP Socket and listen to the negotiate port
 	routerUDPSocket = socket(AF_INET, SOCK_DGRAM)
@@ -381,20 +390,21 @@ def Build_RIB(router):
 		if(rout != router.id-1):
 			r_b = rout + 1
 			# Check if source node, r_a exists
-			print(router.LSDB)
-			print(router.edges[0])
-			print("Dijkstra: passing in ", r_a, " and ", r_b)
-			path = (router.graph.dijkstra(r_a, r_b))
-			total_cost = 0 
-			for i in range(len(path)-1):
-				a = path[i]
-				b = path[i+1]
-				for j in range(len(router.edges[0])):
-					if (((router.edges[0])[j])[0] == a) and (((router.edges[0])[j])[1] == b):
-						total_cost = total_cost + ((router.edges[0])[j])[2]
-						break
+			if len(router.LSDB[rout]) > 0 and len(router.LSDB[r_a-1]) > 0:
+				print(router.LSDB)
+				print(router.edges[0])
+				print("Dijkstra: passing in ", r_a, " and ", r_b)
+				path = (router.graph.dijkstra(r_a, r_b))
+				total_cost = 0 
+				for i in range(len(path)-1):
+					a = path[i]
+					b = path[i+1]
+					for j in range(len(router.edges[0])):
+						if (((router.edges[0])[j])[0] == a) and (((router.edges[0])[j])[1] == b):
+							total_cost = total_cost + ((router.edges[0])[j])[2]
+							break
 
-			router.rib[rout] = [r_b, path[1], total_cost] #[dest, first hop, cost]
+				router.rib[rout] = [r_b, path[1], total_cost] #[dest, first hop, cost]
 
 		elif(rout+1 == router.id):
 			router.rib[rout] = [r_a, 'Local', 0]
@@ -510,6 +520,7 @@ def main():
 
 	#create router:
 	router = Router(router_id);
+	Init_RIB(router)
 
 	#Create UDP Socket
 	routerUDPSocket, routerPort = Create_UDP(router_port)
