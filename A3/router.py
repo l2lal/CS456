@@ -511,7 +511,7 @@ def main():
 
 	#wait for a circuit_DB from NSE
 	router = Wait_Init(routerUDPSocket,router)
-	if(!router):
+	if(not router):
 		print "failed waiting for inits"
 		exit(1)
 
