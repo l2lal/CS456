@@ -392,16 +392,14 @@ def Build_RIB(router):
 		if(rout != router.id-1):
 			r_b = rout + 1
 			# Check if source node, r_a exists
-			print(router.LSDB)
-			print(router.edges[0])
 			for check in range(len(router.edges[0])):
 				if(r_a == ((router.edges[0])[check])[0]):
 					source_in_edges = True
 				if(r_b == ((router.edges[0])[check])[1]):
 					dest_in_edges = True
-					print ("source is in edges!")
+					#print ("source is in edges!")
 			if (len(router.LSDB[rout]) > 0) and (len(router.LSDB[r_a-1]) > 0) and (len(router.edges[0]) > 0) and (source_in_edges) and (dest_in_edges):
-				print("Dijkstra: passing in ", r_a, " and ", r_b)
+				#print("Dijkstra: passing in ", r_a, " and ", r_b)
 				path = (router.graph.dijkstra(r_a, r_b))
 				total_cost = 0 
 				for i in range(len(path)-1):
