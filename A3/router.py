@@ -6,6 +6,7 @@ import struct
 from collections import defaultdict
 from collections import deque, namedtuple
 import logging
+import os
 
 NBR_ROUTER = 5
 NUM_INPUTS = 4
@@ -390,6 +391,10 @@ def main():
 
 	#setup log file
 	filename = "router" + str(router_id) + ".log"
+	try:
+		os.remove(filename)
+	except OSError:
+		pass
 	logging.basicConfig(filename=filename, level=logging.INFO)
 	logging.info('Starting routing protocol for router' + str(router_id))
 
