@@ -381,6 +381,8 @@ def Build_RIB(router):
 		if(rout != router.id-1):
 			r_b = rout + 1
 			# Check if source node, r_a exists
+			print(router.LSDB)
+			print(router.edges[0])
 			print("Dijkstra: passing in ", r_a, " and ", r_b)
 			path = (router.graph.dijkstra(r_a, r_b))
 			total_cost = 0 
