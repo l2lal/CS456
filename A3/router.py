@@ -376,13 +376,14 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 
 		if(updated):
 			router.forwarded.append([router_id, link_id])
+			Print_LSDB(router)
 			#Run SPF Algorithm and put in RIB
 
 
 	#print "Fully updated our LSPDU"
 
 def Print_LSDB(router):
-	logging.info("------- # Topology Database -------")
+	logging.info("------- # START Topology Database -------")
 	for i in range(len(router.LSDB)):
 		for j in range(len(router.LSDB[i])):
 			if j == 0:
@@ -391,6 +392,7 @@ def Print_LSDB(router):
 			link = ((router.LSDB[i])[j])[0]
 			cost = ((router.LSDB[i])[j])[1]
 			logging.info("R" + str(router.id) + " -> R" + str(i+1) + " link " + str(link) + " cost " + str(cost))
+	logging.info("------- # END Topology Database -------")
 
 
 def main():
