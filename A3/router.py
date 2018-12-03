@@ -548,6 +548,7 @@ def main():
 	#Waits for hellos from neighbors - assignment specs doesn't say whether to send LSPDU responses to hellos right away, so I wait for all neighbors to say hello
 	Wait_Hello(routerUDPSocket, router)
 	Update_Graph(router)
+	print(router.edges[0])
 
 	#sends a LSPDU back to all neighbors, since I know I've gotten hellos from them
 	Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port)
