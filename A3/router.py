@@ -392,8 +392,9 @@ def Build_RIB(router):
 
 			router.rib[rout] = [r_b, path[1], total_cost] #[dest, first hop, cost]
 
-		else:
+		elif(rout+1 == router.id:
 			router.rib[rout] = [r_a, 'Local', 0]
+
 
 #Function Update_and_Forward_LSPDU - blocking call, continuously updates LSPDU and forwards packets until router LSPDU is full 
 #Parameters: 4
@@ -444,6 +445,10 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 
 		if(updated):
 			router.forwarded.append([router_id, link_id])
+			Update_Graph(router)
+			router.graph = Graph(router.edges[0])
+			Build_RIB(router)
+			Print_RIB(router)
 			Print_LSDB(router)
 			#Run SPF Algorithm and put in RIB
 
