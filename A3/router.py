@@ -5,7 +5,6 @@ import time
 import struct
 from collections import defaultdict
 from collections import deque, namedtuple
-import logging
 
 NBR_ROUTER = 5
 NUM_INPUTS = 4
@@ -360,11 +359,13 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 				Send_LSPDU(routerUDPSocket, router, nse_host, nse_port , new_packet)
 				updated = True
 				count = 0
-				router.forwarded.append([router_id, link_id])
 				#print [router_id, link_id], router.forwarded
 			#Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port)
-			
+
+		if(updated):
+			router.forwarded.append([router_id, link_id])
 			#Run SPF Algorithm and put in RIB
+
 
 	print "Fully updated our LSPDU"
 
