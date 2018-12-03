@@ -103,7 +103,7 @@ def Create_UDP(port):
 
 	return (routerUDPSocket, routerPort)
 
-def Send_Init(routerUDPSocket, packet, nse_host, nse_port):
+def Send_Init(routerUDPSocket, packet, nse_host, nse_port, router):
 	#Set timeout value to ensure no system hanging; Creating timeout value of 1 minute
 	#timeout = time.time() + 60
 
@@ -403,7 +403,7 @@ def main():
 
 	#send 5 INIT packets to emulate 5 routers, need a way to make these LITTLE-ENDIAN 
 	init_pkt = pkt_INIT(router_id)
-	Send_Init(routerUDPSocket, init_pkt, nse_host, nse_port)
+	Send_Init(routerUDPSocket, init_pkt, nse_host, nse_port, router)
 
 	#wait for a circuit_DB
 	router = Wait_Init(routerUDPSocket,router)
