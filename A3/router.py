@@ -359,13 +359,11 @@ def Update_and_Foward_LSPDU(routerUDPSocket, router, nse_host, nse_port):
 				Send_LSPDU(routerUDPSocket, router, nse_host, nse_port , new_packet)
 				updated = True
 				count = 0
+				router.forwarded.append([router_id, link_id])
 				#print [router_id, link_id], router.forwarded
 			#Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port)
-
-		if(updated):
-			router.forwarded.append([router_id, link_id])
+			
 			#Run SPF Algorithm and put in RIB
-
 
 	print "Fully updated our LSPDU"
 
@@ -378,6 +376,12 @@ def main():
 	nse_host = str(sys.argv[2])
 	nse_port = int(sys.argv[3])
 	router_port = int(sys.argv[4])
+
+	#setup log file
+	filename = "router(" + str(router_id) + ").log"
+	logging.basicConfig(filename=filename, level=logging.INFO)
+	lggging.info('Starting routing protocol for router' + str(router_id))
+
 
 	timeout = time.time() + 60 * 5
 
@@ -421,5 +425,6 @@ def main():
 	#while True:
 
 	#pythontops.com/ python socket network programming
+	#https://dev.to/mxl/dijkstras-algorithm-in-python-algorithms-for-beginners-dkc
 
 main()
