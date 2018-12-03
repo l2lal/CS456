@@ -210,6 +210,11 @@ def Wait_Hello(routerUDPSocket, router):
 						router.edges[0].append([router.id, incoming_router_id, cost])
 					if ([incoming_router_id, router.id, cost] not in router.edges[0]):
 						router.edges[0].append([incoming_router_id, router.id, cost])
+	Update_Graph(router)
+	router.graph = Graph(router.edges[0])
+	Build_RIB(router)
+	Print_RIB(router)
+	Print_LSDB(router)
 
 	#print "Got everything, here's my neighbors: ", router.neighbor_list
 
@@ -554,7 +559,6 @@ def main():
 
 	#Waits for hellos from neighbors - assignment specs doesn't say whether to send LSPDU responses to hellos right away, so I wait for all neighbors to say hello
 	Wait_Hello(routerUDPSocket, router)
-	Update_Graph(router)
 	print(router.LSDB)
 	print(router.edges[0])
 
