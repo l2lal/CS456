@@ -5,6 +5,7 @@ import time
 import struct
 from collections import defaultdict
 from collections import deque, namedtuple
+import logging
 
 NBR_ROUTER = 5
 NUM_INPUTS = 4
