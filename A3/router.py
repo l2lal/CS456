@@ -401,17 +401,17 @@ def Build_RIB(router):
 			if (len(router.LSDB[rout]) > 0) and (len(router.LSDB[r_a-1]) > 0) and (len(router.edges[0]) > 0) and (source_in_edges) and (dest_in_edges):
 				#print("Dijkstra: passing in ", r_a, " and ", r_b)
 				path = (router.graph.dijkstra(r_a, r_b))
-				print(path)
-				total_cost = 0 
-				for i in range(len(path)-1):
-					a = path[i]
-					b = path[i+1]
-					for j in range(len(router.edges[0])):
-						if (((router.edges[0])[j])[0] == a) and (((router.edges[0])[j])[1] == b):
-							total_cost = total_cost + ((router.edges[0])[j])[2]
-							break
+				if(len(path) > 0):
+					total_cost = 0 
+					for i in range(len(path)-1):
+						a = path[i]
+						b = path[i+1]
+						for j in range(len(router.edges[0])):
+							if (((router.edges[0])[j])[0] == a) and (((router.edges[0])[j])[1] == b):
+								total_cost = total_cost + ((router.edges[0])[j])[2]
+								break
 
-				router.rib[rout] = [r_b, path[1], total_cost] #[dest, first hop, cost]
+					router.rib[rout] = [r_b, path[1], total_cost] #[dest, first hop, cost]
 
 		elif(rout+1 == router.id):
 			router.rib[rout] = [r_a, 'Local', 0]
