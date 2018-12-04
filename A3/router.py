@@ -89,6 +89,10 @@ class Router(object):
 		self.graph = None
 		self.nbr_link = None
 
+#Function Init_RIB - initializes router's RIB table
+#Parameters: 1
+#   $1: router handle
+#Return: None
 def Init_RIB(router):
 	for rout in range(NBR_ROUTER):
 		if(rout != router.id - 1):
@@ -99,7 +103,8 @@ def Init_RIB(router):
 
 
 #Function Create_UDP - creates router UDP socket
-#Parameters: port to bind to
+#Parameters: 1
+#   $1: port to bind to
 #Return: 2
 #	$1: Handle to the router UDP socket
 #	$2: router port
@@ -143,9 +148,6 @@ def Wait_Init(routerUDPSocket, router):
 		if(receive_pkt):
 			break
 
-	#serverUDPSocket.close()
-	#print (len(receive_pkt))
-	#origsize = struct.unpack('<%sI' % len(receive_pkt), receive_pkt)
 	circuitDB = struct.unpack('<11I', receive_pkt)
 	num_links = circuitDB[0]
 	router.nbr_link = num_links
@@ -158,9 +160,7 @@ def Wait_Init(routerUDPSocket, router):
 		#print link_ind, cost_ind
 		router.LSDB[router.id-1].append([circuitDB[link_ind],circuitDB[cost_ind]])
 		ind_count = ind_count + 2
-		#router.neighbor_list.append[circuitDB[link_ind]]
 
-	#PYTHON HOW TO APPEND TO LIST - WE WANT TO CREATE A CIRCUIT_DB and return that!
 	return router
 
 #Function Send_Hello - Sends HELLO Packet to neighbors
@@ -514,7 +514,7 @@ def Print_RIB(router):
 		dest = ((router.rib[i])[0])
 		first_hop = ((router.rib[i])[1])
 		tot_cost = ((router.rib[i])[2])
-		logging.info("R" + str(router.id) + " -> " + str(dest) + " -> " + str(first_hop) + ", " + str(tot_cost))
+		logging.info("R" + str(router.id) + " -> " + "R" + str(dest) + " -> " + str(first_hop) + ", " + str(tot_cost))
 	logging.info("------- # END RIB -------")	
 
 #MAIN FUNCTION
@@ -559,8 +559,6 @@ def main():
 
 	#Waits for hellos from neighbors - assignment specs doesn't say whether to send LSPDU responses to hellos right away, so I wait for all neighbors to say hello
 	Wait_Hello(routerUDPSocket, router)
-	print(router.LSDB)
-	print(router.edges[0])
 
 	#sends a LSPDU back to all neighbors, since I know I've gotten hellos from them
 	Send_All_LSPDU(routerUDPSocket, router, nse_host, nse_port)
